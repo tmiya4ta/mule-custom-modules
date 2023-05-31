@@ -2,6 +2,10 @@
 
 ## Custom modules for Mule4
 
-- mule-csv-file-split-module
-- mule-jp-characters-module
+#### mule-jp-characters-module
+日本語の全角と半角を変換するモジュールです。
+
+#### mule-csv-file-split-module
+サイズの大きなファイルを分割するモジュールです。Linux上のsplitコマンドを使用して分割するかもしくは、Javaの実装にて分割します。
+結合については、catコマンドによる結合を行います。（こちらはまだβステータスです)
 
