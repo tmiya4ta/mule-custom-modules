@@ -1,0 +1,19 @@
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:jpcharactersconverter="http://www.mulesoft.org/schema/mule/jpcharactersconverter"
+      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+          http://www.mulesoft.org/schema/mule/jpcharactersconverter http://www.mulesoft.org/schema/mule/jpcharactersconverter/current/mule-jpcharactersconverter.xsd">
+
+    <jpcharactersconverter:config name="config" configId="configId">
+        <jpcharactersconverter:connection requiredParameter="aValue" />
+    </jpcharactersconverter:config>
+
+    <flow name="sayHiFlow">
+        <jpcharactersconverter:say-hi person="Mariano Gonzalez"/>
+    </flow>
+
+    <flow name="retrieveInfoFlow">
+        <jpcharactersconverter:retrieve-info config-ref="config"/>
+    </flow>
+
+</mule>
