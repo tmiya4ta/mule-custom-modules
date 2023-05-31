@@ -4,6 +4,12 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
 import org.junit.Test;
+import java.util.Arrays;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.Path;
+import java.io.File;
+import java.io.IOException;
 
 public class CsvFileSplitOperationsTestCase extends MuleArtifactFunctionalTestCase {
 
@@ -16,21 +22,50 @@ public class CsvFileSplitOperationsTestCase extends MuleArtifactFunctionalTestCa
   }
 
   @Test
-  public void executeSayHiOperation() throws Exception {
-    String payloadValue = ((String) flowRunner("sayHiFlow").run()
+  public void executeSplitCsvOperation() throws Exception {
+	  String[] paths = (String[]) flowRunner("split-csv").run()
                                       .getMessage()
                                       .getPayload()
-                                      .getValue());
-    assertThat(payloadValue, is("Hello Mariano Gonzalez!!!"));
+                                      .getValue();
+
+    
+	  Path filePath = Paths.get(paths[0]);
+	  String fileName = filePath.getFileName().toString();
+    
+
+	  Arrays.asList(paths).forEach(path -> {
+		  try {
+		      Files.delete(Paths.get(path));
+		  } catch (IOException e) {
+		      System.out.println("An error occurred.");
+		      e.printStackTrace();
+		  }});
+	  Files.delete(filePath.getParent());
+	  assertThat(fileName, is("s_00000"));
+
   }
 
   @Test
-  public void executeRetrieveInfoOperation() throws Exception {
-    String payloadValue = ((String) flowRunner("retrieveInfoFlow")
-                                      .run()
+  public void executeSplitCsvByCommandOperation() throws Exception {
+	  String[] paths = (String[]) flowRunner("split-csv-by-command").run()
                                       .getMessage()
                                       .getPayload()
-                                      .getValue());
-    assertThat(payloadValue, is("Using Configuration [configId] with Connection id [aValue:100]"));
+                                      .getValue();
+
+	  
+	  Path filePath = Paths.get(paths[0]);
+	  String fileName = filePath.getFileName().toString();
+    
+
+	  Arrays.asList(paths).forEach(path -> {
+		  try {
+		      Files.delete(Paths.get(path));
+		  } catch (IOException e) {
+		      System.out.println("An error occurred.");
+		      e.printStackTrace();
+		  }});
+	  Files.delete(filePath.getParent());
+	  assertThat(fileName, is("xaa"));
+
   }
 }

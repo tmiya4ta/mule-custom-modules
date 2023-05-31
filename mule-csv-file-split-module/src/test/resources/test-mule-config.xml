@@ -1,19 +1,22 @@
 <mule xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xmlns:csvfilesplit="http://www.mulesoft.org/schema/mule/csvfilesplit"
       xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
           http://www.mulesoft.org/schema/mule/csvfilesplit http://www.mulesoft.org/schema/mule/csvfilesplit/current/mule-csvfilesplit.xsd">
 
-    <csvfilesplit:config name="config" configId="configId">
-        <csvfilesplit:connection requiredParameter="aValue" />
+    <csvfilesplit:config name="config-impl">
     </csvfilesplit:config>
 
-    <flow name="sayHiFlow">
-        <csvfilesplit:say-hi person="Mariano Gonzalez"/>
+    <csvfilesplit:config name="config-command" splitCmd="/usr/bin/split">
+    </csvfilesplit:config>
+
+    <flow name="split-csv">
+      <csvfilesplit:split-csv config-ref="config-impl" srcFilePath="test-resources/bom.csv"/>
     </flow>
 
-    <flow name="retrieveInfoFlow">
-        <csvfilesplit:retrieve-info config-ref="config"/>
+    <flow name="split-csv-by-command">
+      <csvfilesplit:split-csv config-ref="config-command" srcFilePath="test-resources/bom.csv"/>
     </flow>
 
 </mule>

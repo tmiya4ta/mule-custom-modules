@@ -49,12 +49,13 @@ public class CsvFileSplitOperations {
 	private Stream<Path> splitCsvByCmd(String splitCmd, String tmpDir, Path srcFilePath, long unitNum)
 			throws IOException, InterruptedException {
 
-		ProcessBuilder builder = new ProcessBuilder(splitCmd, "-l", String.valueOf(unitNum), srcFilePath.toString());
+		ProcessBuilder builder = new ProcessBuilder(splitCmd, "-l", String.valueOf(unitNum),
+				srcFilePath.toFile().getAbsolutePath());
 		builder.directory(new File(tmpDir));
 		builder.redirectErrorStream(true);
 		Process process = builder.start();
 		process.waitFor();
-		return Files.list(Path.of(tmpDir));
+		return Files.list(Paths.get(tmpDir));
 	}
 
 	private Stream<Path> splitCsvByImpl(String tmpDir, Path srcFilePath, long unitNum, long chunkSize) throws IOException {
@@ -113,7 +114,7 @@ public class CsvFileSplitOperations {
 
 		}
 
-		return Files.list(Path.of(tmpDir));
+		return Files.list(Paths.get(tmpDir));
 
 	}
 
@@ -128,8 +129,8 @@ public class CsvFileSplitOperations {
 		Stream<Path> result;
 		try {
 			String workDir = configuration.getWorkDir();
-			Files.createDirectories(Path.of(workDir));
-			String tmpDir = Files.createTempDirectory(Path.of(workDir), "mule-").toFile().getAbsolutePath();
+			Files.createDirectories(Paths.get(workDir));
+			String tmpDir = Files.createTempDirectory(Paths.get(workDir), "mule-").toFile().getAbsolutePath();
 			Path path = Paths.get(srcFilePath);
 			long unitNum = Long.parseLong(line);
 
