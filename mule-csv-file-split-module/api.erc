@@ -1,0 +1,6 @@
+POST http://localhost:7071
+Content-Type: application/json
+{
+"cmd": "/usr/bin/split",
+"path": "/tmp/mule-demo/data/waiting/bom-755M.csv"
+}

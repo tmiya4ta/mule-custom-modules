@@ -1,8 +1,9 @@
-package org.mule.extension.demo.internal;
+package org.mule.extension.csvfilesplit.internal;
 
 import org.mule.runtime.extension.api.annotation.Extension;
 import org.mule.runtime.extension.api.annotation.Configurations;
 import org.mule.runtime.extension.api.annotation.dsl.xml.Xml;
+import org.mule.runtime.extension.api.annotation.error.ErrorTypes;
 
 
 /**
@@ -11,6 +12,7 @@ import org.mule.runtime.extension.api.annotation.dsl.xml.Xml;
  */
 @Xml(prefix = "csvfilesplit")
 @Extension(name = "CsvFileSplit")
+@ErrorTypes(CsvFileSplitErrors.class)
 @Configurations(CsvFileSplitConfiguration.class)
 public class CsvFileSplitExtension {
 

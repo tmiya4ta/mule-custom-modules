@@ -1,4 +1,4 @@
-package org.mule.extension.demo.internal;
+package org.mule.extension.csvfilesplit.internal;
 
 
 /**

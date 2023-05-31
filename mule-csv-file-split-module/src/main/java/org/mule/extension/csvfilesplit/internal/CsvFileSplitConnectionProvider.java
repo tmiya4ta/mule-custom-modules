@@ -1,4 +1,4 @@
-package org.mule.extension.demo.internal;
+package org.mule.extension.csvfilesplit.internal;
 
 import org.mule.runtime.api.connection.ConnectionException;
 import org.mule.runtime.extension.api.annotation.param.Parameter;

@@ -13,7 +13,7 @@ Add this dependency to your application pom.xml
 
 ```
 <groupId>com.demo-group</groupId>
-<artifactId>mule-csv-file-split-connector</artifactId>
-<version>1.0.0</version>
+<artifactId>mule-csv-file-split-module</artifactId>
+<version>0.0.1</version>
 <classifier>mule-plugin</classifier>
 ```

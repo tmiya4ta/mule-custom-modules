@@ -1,0 +1,22 @@
+{:paths ["src" "resources"],
+ :deps {org.clojure/clojure {:mvn/version "1.11.1"},
+        org.clojure/tools.cli {:mvn/version "1.0.206"},
+        io.gitlab.myst3m/silvur {:mvn/version "2.3.9"}
+        mount/mount {:mvn/version "0.1.17"},
+        camel-snake-kebab/camel-snake-kebab {:mvn/version "0.4.3"}},
+ :aliases {:test {:extra-paths ["test"],
+                  :extra-deps {org.clojure/test.check {:mvn/version "0.10.0"}}},
+           :runner {:extra-deps {com.cognitect/test-runner {:git/url "https://github.com/cognitect-labs/test-runner",
+                                                            :sha "f7ef16dc3b8332b0d77bc0274578ad5270fbfedd"}},
+                    :main-opts ["-m"
+                                "cognitect.test-runner"
+                                "-d"
+                                "test"]},
+           :build {:main-opts ["-m" "silvur.build"]},
+           :deploy {:main-opts ["-m" "silvur.build" "deploy"]},
+           :uberjar {:exec-fn silvur.build/exec-uberjar,
+                     :exec-args {:artifact "mule-csv-file-split-module",
+                                 :version "0.0.1",
+                                 :aot true,
+                                 :main "mule-csv-file-split-module.core"}},
+           :javac {:main-opts ["-m" "silvur.build" "javac"]}}}
