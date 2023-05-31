@@ -5,10 +5,10 @@
 
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.demo-group</groupId>
-  <artifactId>mule-jp-characters-converter</artifactId>
+  <artifactId>mule-jp-characters-module</artifactId>
   <version>0.1.2</version>
   <packaging>mule-extension</packaging>
-  <name>JpCharactersConverter Extension</name>
+  <name>JpCharacters Module</name>
 
   <parent>
     <groupId>org.mule.extensions</groupId>
@@ -36,3 +36,7 @@
 
 
 </project>
+
+
+<!-- Package -->
+<!-- mvn package -DskipTests -Dmaven.java.doc=false -->
