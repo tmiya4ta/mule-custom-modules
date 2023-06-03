@@ -21,7 +21,7 @@
 
     <flow name="split-and-concat">
       <csvfilesplit:split-csv config-ref="config-impl" srcFilePath="test-resources/bom.csv" line="100"/>
-      <csvfilesplit:concat config-ref="config-impl" dstFilePath="test-resources/result.csv"/>
+      <csvfilesplit:concat config-ref="config-impl" dstFilePath="test-resources/result.csv" isDeleteTempFiles="true"/>
     </flow>
 
 </mule>

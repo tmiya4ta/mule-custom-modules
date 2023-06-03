@@ -6,7 +6,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.demo-group</groupId>
     <artifactId>mule-csv-file-split-module</artifactId>
-    <version>0.0.52</version>
+    <version>0.0.56</version>
     <packaging>mule-extension</packaging>
     <name>CsvFileSplit Extension</name>
 

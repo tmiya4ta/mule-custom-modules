@@ -1,6 +1,7 @@
 package org.mule.extension.csvfilesplit.internal;
 
 import static org.mule.runtime.extension.api.annotation.param.MediaType.ANY;
+import org.mule.runtime.extension.api.annotation.param.display.Summary;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -42,13 +43,18 @@ import org.mule.runtime.api.meta.ExpressionSupport;
 import org.mule.runtime.api.scheduler.Scheduler;
 
 import static org.mule.runtime.extension.api.annotation.param.Optional.PAYLOAD;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+
 
 /**
  * This class is a container for operations, every public method in this class
  * will be taken as an extension operation.
  */
 public class CsvFileSplitOperations {
-
+    static Logger logger = LoggerFactory.getLogger(CsvFileSplitOperations.class);
+    
 	private Stream<Path> splitCsvByCmd(String splitCmd, String tmpDir, Path srcFilePath, long unitNum)
 			throws IOException, InterruptedException {
 
@@ -126,8 +132,8 @@ public class CsvFileSplitOperations {
 	@MediaType(value = ANY, strict = false)
 	public String[] splitCsv(@Config CsvFileSplitConfiguration configuration,
 				 @Expression(ExpressionSupport.SUPPORTED) String srcFilePath,
-				 @Expression(ExpressionSupport.SUPPORTED) @Optional(defaultValue = "10000") String line,
-				 @Optional(defaultValue = "1000") long chunkSize) {
+				 @Expression(ExpressionSupport.SUPPORTED) @Optional(defaultValue = "10000") @Summary("Lines in 1 file") String line,
+				 @Optional(defaultValue = "1000") @Summary("Unit lines for a split operation as a batch") long chunkSize) {
 	    
 		Stream<Path> result;
 		try {
@@ -140,10 +146,8 @@ public class CsvFileSplitOperations {
 			String cmd = configuration.getSplitCmd();
 
 			if (cmd == null || cmd.isEmpty()) {
-				System.out.println("Use Java implementation");
 				result = splitCsvByImpl(tmpDir, path, unitNum, chunkSize);
 			} else {
-				System.out.println("Use split command");
 				result = splitCsvByCmd(cmd, tmpDir, path, unitNum);
 				// result = splitCsvByCmd(configuration, srcFilePath, line);
 			}
@@ -160,8 +164,9 @@ public class CsvFileSplitOperations {
 	@Throws(ExecuteErrorsProvider.class)
 	@MediaType(value = ANY, strict = false)
 	public String concat(@Config CsvFileSplitConfiguration configuration,
-			@DisplayName("Files") @Optional(defaultValue = PAYLOAD) @Expression(ExpressionSupport.SUPPORTED) ArrayList<String> files,
-			@DisplayName("Target File Path") @Optional(defaultValue = "/tmp/result.csv") @Expression(ExpressionSupport.SUPPORTED) String dstFilePath) {
+			     @DisplayName("Files") @Optional(defaultValue = PAYLOAD) @Expression(ExpressionSupport.SUPPORTED) ArrayList<String> files,
+			     @DisplayName("Target File Path") @Optional(defaultValue = "/tmp/result.csv") @Expression(ExpressionSupport.SUPPORTED) String dstFilePath,
+			     @DisplayName("Delete temporary files") @Optional(defaultValue = "true") @Expression(ExpressionSupport.SUPPORTED) boolean isDeleteTempFiles) {
 
 	    File dstFile = new File(dstFilePath);
 	    FileChannel dstChannel = null;
@@ -178,6 +183,18 @@ public class CsvFileSplitOperations {
 	    } finally {
 		try {
 		    dstChannel.close();
+		    
+		    if (isDeleteTempFiles) {
+			for (String file : files) {
+			    File srcFile = new File(file);
+			    srcFile.delete();
+			}
+			String firstFile = files.get(0);
+			Path filePath = Paths.get(firstFile);
+			logger.info("Delete temporary directory: " + filePath.getParent());
+			Files.delete(filePath.getParent());
+		    }
+		    
 		} catch (IOException e) {
 		    throw new ModuleException(CsvFileSplitErrors.INVALID_PARAMETER, e);
 		}
@@ -186,33 +203,36 @@ public class CsvFileSplitOperations {
 	}
 
 	    
-	
-	@DisplayName("ConcatByCommand")
-	@Throws(ExecuteErrorsProvider.class)
-	@MediaType(value = ANY, strict = false)
-	public String concatByCommand(@Config CsvFileSplitConfiguration configuration,
-			@DisplayName("Files") @Optional(defaultValue = PAYLOAD) @Expression(ExpressionSupport.SUPPORTED) ArrayList<String> files,
-			@DisplayName("Target File Path") @Optional(defaultValue = "/tmp/result.csv") @Expression(ExpressionSupport.SUPPORTED) String dstFilePath) {
+	// This is a code so as to use concat command.
+        // java.nio functions is faster enough compared with concat command.
+        // Therefore, this code is not used. But I leave this code for reference.
+    
+	// @DisplayName("ConcatByCommand")
+	// @Throws(ExecuteErrorsProvider.class)
+	// @MediaType(value = ANY, strict = false)
+	// public String concatByCommand(@Config CsvFileSplitConfiguration configuration,
+	// 		@DisplayName("Files") @Optional(defaultValue = PAYLOAD) @Expression(ExpressionSupport.SUPPORTED) ArrayList<String> files,
+	// 		@DisplayName("Target File Path") @Optional(defaultValue = "/tmp/result.csv") @Expression(ExpressionSupport.SUPPORTED) String dstFilePath) {
 
-		try {
-			File targetFile = new File(dstFilePath);
-			String cmd = configuration.getConcatCmd();
+	// 	try {
+	// 		File targetFile = new File(dstFilePath);
+	// 		String cmd = configuration.getConcatCmd();
 
-			ArrayList<String> cmdWithArgs = new ArrayList<String>();
-			cmdWithArgs.add(cmd);
-			cmdWithArgs.addAll(files);
-			ProcessBuilder builder = new ProcessBuilder(cmdWithArgs);
-			builder.redirectOutput(targetFile);
-			builder.redirectErrorStream(true);
+	// 		ArrayList<String> cmdWithArgs = new ArrayList<String>();
+	// 		cmdWithArgs.add(cmd);
+	// 		cmdWithArgs.addAll(files);
+	// 		ProcessBuilder builder = new ProcessBuilder(cmdWithArgs);
+	// 		builder.redirectOutput(targetFile);
+	// 		builder.redirectErrorStream(true);
 
-			// System.out.println("Command: " + builder.command());
-			Process process = builder.start();
-			process.waitFor();
-		} catch (InterruptedException e) {
-			throw new ModuleException(CsvFileSplitErrors.INTERRUPTED, e);
-		} catch (IOException e) {
-			throw new ModuleException(CsvFileSplitErrors.INVALID_PARAMETER, e);
-		}
-		return dstFilePath;
-	}
+	// 		// System.out.println("Command: " + builder.command());
+	// 		Process process = builder.start();
+	// 		process.waitFor();
+	// 	} catch (InterruptedException e) {
+	// 		throw new ModuleException(CsvFileSplitErrors.INTERRUPTED, e);
+	// 	} catch (IOException e) {
+	// 		throw new ModuleException(CsvFileSplitErrors.INVALID_PARAMETER, e);
+	// 	}
+	// 	return dstFilePath;
+	// }
 }
