@@ -131,8 +131,8 @@ public class CsvFileSplitOperations {
 	@Throws(ExecuteErrorsProvider.class)
 	@MediaType(value = ANY, strict = false)
 	public String[] splitCsv(@Config CsvFileSplitConfiguration configuration,
-				 @Expression(ExpressionSupport.SUPPORTED) String srcFilePath,
-				 @Expression(ExpressionSupport.SUPPORTED) @Optional(defaultValue = "10000") @Summary("Lines in 1 file") String line,
+				 @Expression(ExpressionSupport.SUPPORTED) @Optional(defaultValue = PAYLOAD) String srcFilePath,
+				 @Expression(ExpressionSupport.SUPPORTED) @Optional(defaultValue = "10000") @Summary("Lines in a file") String line,
 				 @Optional(defaultValue = "1000") @Summary("Unit lines for a split operation as a batch") long chunkSize) {
 	    
 		Stream<Path> result;
@@ -165,7 +165,7 @@ public class CsvFileSplitOperations {
 	@MediaType(value = ANY, strict = false)
 	public String concat(@Config CsvFileSplitConfiguration configuration,
 			     @DisplayName("Files") @Optional(defaultValue = PAYLOAD) @Expression(ExpressionSupport.SUPPORTED) ArrayList<String> files,
-			     @DisplayName("Target File Path") @Optional(defaultValue = "/tmp/result.csv") @Expression(ExpressionSupport.SUPPORTED) String dstFilePath,
+			     @DisplayName("Target file path") @Optional(defaultValue = "/tmp/result.csv") @Expression(ExpressionSupport.SUPPORTED) String dstFilePath,
 			     @DisplayName("Delete temporary files") @Optional(defaultValue = "true") @Expression(ExpressionSupport.SUPPORTED) boolean isDeleteTempFiles) {
 
 	    File dstFile = new File(dstFilePath);

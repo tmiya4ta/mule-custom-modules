@@ -31,7 +31,7 @@ public class CsvFileSplitConfiguration {
 
 	@Parameter
 	@Path(type = Type.FILE, acceptsUrls = false)
-	@DisplayName("External Split Command")
+	@DisplayName("External split command")
 	@Summary("Blank to use Java implementation")
 	@Optional
 	private String splitCmd;
