@@ -68,4 +68,20 @@ public class CsvFileSplitOperationsTestCase extends MuleArtifactFunctionalTestCa
 	  assertThat(fileName, is("xaa"));
 
   }
+
+  @Test
+  public void executeConcatOperation() throws Exception {
+	  String path = (String) flowRunner("split-and-concat").run()
+                                      .getMessage()
+                                      .getPayload()
+                                      .getValue();
+
+	  
+	  Path filePath = Paths.get(path);
+	  if (!Files.exists(filePath)) {
+	      assertThat(Files.exists(filePath), is(true));
+	  }
+	  Files.delete(filePath);	  
+  }
+
 }

@@ -24,6 +24,9 @@ import java.util.Set;
 import java.util.StringJoiner;
 import java.util.stream.Stream;
 import java.io.BufferedReader;
+import java.nio.channels.FileChannel;
+
+
 
 import org.mule.runtime.extension.api.annotation.param.MediaType;
 import org.mule.runtime.extension.api.annotation.param.Optional;
@@ -153,15 +156,46 @@ public class CsvFileSplitOperations {
 		return result.map((x) -> x.toString()).toArray(String[]::new);
 	}
 
-	@DisplayName("Concat")
+    	@DisplayName("Concat")
 	@Throws(ExecuteErrorsProvider.class)
 	@MediaType(value = ANY, strict = false)
-	public String concatCsv(@Config CsvFileSplitConfiguration configuration,
+	public String concat(@Config CsvFileSplitConfiguration configuration,
 			@DisplayName("Files") @Optional(defaultValue = PAYLOAD) @Expression(ExpressionSupport.SUPPORTED) ArrayList<String> files,
-			@DisplayName("Target File Path") @Optional(defaultValue = "/tmp/result.csv") @Expression(ExpressionSupport.SUPPORTED) String targetFilePath) {
+			@DisplayName("Target File Path") @Optional(defaultValue = "/tmp/result.csv") @Expression(ExpressionSupport.SUPPORTED) String dstFilePath) {
+
+	    File dstFile = new File(dstFilePath);
+	    FileChannel dstChannel = null;
+	    try {
+		dstChannel = FileChannel.open(dstFile.toPath(), StandardOpenOption.CREATE, StandardOpenOption.WRITE, StandardOpenOption.APPEND);
+		for (String file : files) {
+		    File srcFile = new File(file);
+		    FileChannel srcChannel = FileChannel.open(srcFile.toPath(), StandardOpenOption.READ);
+		    srcChannel.transferTo(0, srcChannel.size(), dstChannel);
+		    srcChannel.close();
+		}
+	    } catch (IOException e) {
+		throw new ModuleException(CsvFileSplitErrors.INVALID_PARAMETER, e);
+	    } finally {
+		try {
+		    dstChannel.close();
+		} catch (IOException e) {
+		    throw new ModuleException(CsvFileSplitErrors.INVALID_PARAMETER, e);
+		}
+	    }
+	    return dstFilePath;
+	}
+
+	    
+	
+	@DisplayName("ConcatByCommand")
+	@Throws(ExecuteErrorsProvider.class)
+	@MediaType(value = ANY, strict = false)
+	public String concatByCommand(@Config CsvFileSplitConfiguration configuration,
+			@DisplayName("Files") @Optional(defaultValue = PAYLOAD) @Expression(ExpressionSupport.SUPPORTED) ArrayList<String> files,
+			@DisplayName("Target File Path") @Optional(defaultValue = "/tmp/result.csv") @Expression(ExpressionSupport.SUPPORTED) String dstFilePath) {
 
 		try {
-			File targetFile = new File(targetFilePath);
+			File targetFile = new File(dstFilePath);
 			String cmd = configuration.getConcatCmd();
 
 			ArrayList<String> cmdWithArgs = new ArrayList<String>();
@@ -179,6 +213,6 @@ public class CsvFileSplitOperations {
 		} catch (IOException e) {
 			throw new ModuleException(CsvFileSplitErrors.INVALID_PARAMETER, e);
 		}
-		return targetFilePath;
+		return dstFilePath;
 	}
 }
