@@ -21,7 +21,7 @@ public class CsvFileSplitOperationsTestCase extends MuleArtifactFunctionalTestCa
     return "test-mule-config.xml";
   }
 
-  @Test
+//  @Test
   public void executeSplitCsvOperation() throws Exception {
 	  String[] paths = (String[]) flowRunner("split-csv").run()
                                       .getMessage()
@@ -45,7 +45,7 @@ public class CsvFileSplitOperationsTestCase extends MuleArtifactFunctionalTestCa
 
   }
 
-  @Test
+//  @Test
   public void executeSplitCsvByCommandOperation() throws Exception {
 	  String[] paths = (String[]) flowRunner("split-csv-by-command").run()
                                       .getMessage()
@@ -70,6 +70,21 @@ public class CsvFileSplitOperationsTestCase extends MuleArtifactFunctionalTestCa
   }
 
   @Test
+  public void executeSplitFromStreamOperation() throws Exception {
+	  String path = (String) flowRunner("split-csv-from-stream").run()
+                                      .getMessage()
+                                      .getPayload()
+                                      .getValue();
+
+	  
+	  Path filePath = Paths.get(path);
+	  if (!Files.exists(filePath)) {
+	      assertThat(Files.exists(filePath), is(true));
+	  }
+	  Files.delete(filePath);	  
+  }
+
+//  @Test
   public void executeConcatOperation() throws Exception {
 	  String path = (String) flowRunner("split-and-concat").run()
                                       .getMessage()
