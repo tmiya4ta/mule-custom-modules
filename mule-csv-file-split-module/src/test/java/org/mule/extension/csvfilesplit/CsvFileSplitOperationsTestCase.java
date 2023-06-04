@@ -21,7 +21,7 @@ public class CsvFileSplitOperationsTestCase extends MuleArtifactFunctionalTestCa
     return "test-mule-config.xml";
   }
 
-//  @Test
+  @Test
   public void executeSplitCsvOperation() throws Exception {
 	  String[] paths = (String[]) flowRunner("split-csv").run()
                                       .getMessage()
@@ -84,7 +84,7 @@ public class CsvFileSplitOperationsTestCase extends MuleArtifactFunctionalTestCa
 	  Files.delete(filePath);	  
   }
 
-//  @Test
+  @Test
   public void executeConcatOperation() throws Exception {
 	  String path = (String) flowRunner("split-and-concat").run()
                                       .getMessage()

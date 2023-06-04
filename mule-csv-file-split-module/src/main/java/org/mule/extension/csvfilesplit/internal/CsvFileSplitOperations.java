@@ -97,25 +97,16 @@ public class CsvFileSplitOperations {
 		chunkCounter++;
 		lineCounter++;
 			    
-		if (chunkCounter == chunkSize) {
+		if (((chunkCounter == chunkSize) && (lineCounter < unitNum) || (lineCounter == unitNum))) {
 		    outFileName = "s_" + String.format("%05d", fileSeqNum);
 		    outPath = fs.getPath(tmpDir, outFileName);
-		    String content = sj.toString();
-		    if (lineCounter <= unitNum) {
-			content += "\n";
-		    }		    
+		    String content = sj.toString() + "\n";
 		    Files.write(outPath, content.getBytes(), StandardOpenOption.CREATE, StandardOpenOption.WRITE, StandardOpenOption.APPEND);
 		    sj = new StringJoiner("\n");
 		    chunkCounter = 0;
-				
 		} 
 
 		if(lineCounter == unitNum) {
-		    outFileName = "s_" + String.format("%05d", fileSeqNum);
-		    outPath = fs.getPath(tmpDir, outFileName);
-		    String content = sj.toString() ;
-		    Files.write(outPath, content.getBytes(), StandardOpenOption.CREATE, StandardOpenOption.WRITE, StandardOpenOption.APPEND);
-		    sj = new StringJoiner("\n");
 		    chunkCounter = 0;
 		    lineCounter = 0;
 		    fileSeqNum++;

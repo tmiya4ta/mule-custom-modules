@@ -19,15 +19,14 @@
     </csvfilesplit:config>
 
     <flow name="split-csv">
-      <csvfilesplit:split-csv config-ref="config-impl" srcFilePath="test-resources/bom.csv"/>
+      <csvfilesplit:split-csv config-ref="config-impl" srcFilePath="test-resources/bom.csv" line="50" chunkSize="100"/>
     </flow>
 
     <flow name="split-csv-from-stream">
       <file:read  config-ref="File_Config" path="test-resources/bom.csv" outputMimeType="application/csv; streaming=true">
-	<ee:repeatable-file-store-stream inMemorySize="1024" />
       </file:read>
       
-      <csvfilesplit:split-csv config-ref="config-impl" line="500" chunkSize="100"/>
+      <csvfilesplit:split-csv config-ref="config-impl" input="#[payload]" line="500" chunkSize="100"/>
     </flow>
 
     <flow name="split-csv-by-command">
