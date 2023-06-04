@@ -92,6 +92,29 @@ public class CsvFileSplitOperationsTestCase extends MuleArtifactFunctionalTestCa
   }
 
   @Test
+  public void executeSplitFromStreamOperationWithPartition() throws Exception {
+      String[] paths = (String[]) flowRunner("split-csv-from-stream-with-partition").run()
+                                      .getMessage()
+                                      .getPayload()
+                                      .getValue();
+
+	  Path filePath = Paths.get(paths[0]);
+	  String fileName = filePath.getFileName().toString();
+    
+
+	  Arrays.asList(paths).forEach(path -> {
+		  try {
+		      Files.delete(Paths.get(path));
+		  } catch (IOException e) {
+		      System.out.println("An error occurred.");
+		      e.printStackTrace();
+		  }});
+	  Files.delete(filePath.getParent());
+	  assertThat(fileName, is("s_00000"));
+  }
+
+
+  @Test
   public void executeConcatOperation() throws Exception {
 	  String path = (String) flowRunner("split-and-concat").run()
                                       .getMessage()

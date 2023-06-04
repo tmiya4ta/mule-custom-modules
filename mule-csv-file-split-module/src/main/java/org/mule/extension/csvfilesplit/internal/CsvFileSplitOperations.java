@@ -26,11 +26,15 @@ import java.util.StringJoiner;
 import java.util.stream.Stream;
 import java.io.BufferedReader;
 import java.nio.channels.FileChannel;
+import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 
-
-
+import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.extension.api.annotation.param.MediaType;
 import org.mule.runtime.extension.api.annotation.param.Optional;
+import org.mule.runtime.extension.api.annotation.param.NullSafe;
 import org.mule.runtime.extension.api.annotation.param.Parameter;
 import org.mule.runtime.extension.api.annotation.param.display.DisplayName;
 import org.mule.runtime.extension.api.exception.ModuleException;
@@ -41,7 +45,9 @@ import org.mule.runtime.extension.api.annotation.param.Connection;
 import org.mule.runtime.extension.api.annotation.param.Content;
 import org.mule.runtime.api.meta.ExpressionSupport;
 import org.mule.runtime.api.scheduler.Scheduler;
-
+import org.mule.runtime.extension.api.runtime.streaming.PagingProvider;
+import org.mule.runtime.extension.api.runtime.operation.Result;
+    
 import static org.mule.runtime.extension.api.annotation.param.Optional.PAYLOAD;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -178,7 +184,7 @@ public class CsvFileSplitOperations {
     @Throws(ExecuteErrorsProvider.class)
     @MediaType(value = ANY, strict = false)
     public String concat(@Config CsvFileSplitConfiguration configuration,
-			 @DisplayName("Files") @Optional(defaultValue = PAYLOAD) @Expression(ExpressionSupport.SUPPORTED) ArrayList<String> files,
+			 @DisplayName("Files") @Optional(defaultValue = PAYLOAD) @Expression(ExpressionSupport.SUPPORTED) @NullSafe ArrayList<String> files,
 			 @DisplayName("Target file path") @Optional(defaultValue = "/tmp/result.csv") @Expression(ExpressionSupport.SUPPORTED) String dstFilePath,
 			 @DisplayName("Delete temporary files") @Optional(defaultValue = "true") @Expression(ExpressionSupport.SUPPORTED) boolean isDeleteTempFiles) {
 
@@ -215,4 +221,80 @@ public class CsvFileSplitOperations {
 	}
 	return dstFilePath;
     }
+
+
+    @DisplayName("Partition")
+    @Throws(ExecuteErrorsProvider.class)
+    @MediaType(value = ANY, strict = false)
+    public  PagingProvider<CsvFileSplitConnection, List<Map<String, String>>> partition(@Config CsvFileSplitConfiguration configuration,
+				 @Expression(ExpressionSupport.SUPPORTED) @Optional(defaultValue = PAYLOAD) InputStream input,
+				 @Expression(ExpressionSupport.SUPPORTED) @Optional(defaultValue = "10000") @Summary("Lines in a file") String line) {
+
+	
+	return new PagingProvider<CsvFileSplitConnection, List<Map<String, String>>>() {
+	    private BufferedReader rdr = null;
+	    
+	    private final AtomicBoolean initialised = new AtomicBoolean(false);
+	 
+
+	    private void initializePagingProvider(CsvFileSplitConnection connection) {
+		rdr = new BufferedReader(new InputStreamReader(input));
+		logger.info("Initialized paging provider");
+	    }
+	    
+	    @Override
+	    public List<List<Map<String, String>>> getPage(CsvFileSplitConnection connection) {
+		if (initialised.compareAndSet(false, true)) {
+		    initializePagingProvider(connection);
+		}
+		List<Map<String, String>> lines = new ArrayList<Map<String, String>>();
+		int unitNum = Integer.parseInt(line);
+		logger.trace("unitNum: " + unitNum);
+		
+		for (int i = 0; i < unitNum; i++) {
+		    try {
+			String line = rdr.readLine();
+			if (line == null) {
+			    break;
+			}
+			Map<String, String> map = new HashMap<String, String>();
+			String[] cols = line.split(",");
+
+			for (int j = 0; j < cols.length; j++) {
+			    map.put("column_" + j, cols[j]);
+			}
+			
+			lines.add(map);
+		    } catch (IOException e) {
+			logger.error("Error reading line", e);
+			throw new ModuleException(CsvFileSplitErrors.INVALID_PARAMETER, e);
+		    }
+		}
+
+		if (lines.size() == 0) {
+		    logger.info("No more data");
+		    return null;
+		} else {
+		    return new ArrayList<List<Map<String, String>>>(Arrays.asList(lines));
+		}
+	    }
+
+	    @Override
+	    public java.util.Optional<Integer> getTotalResults(CsvFileSplitConnection connection) {
+		return null;
+	    }
+
+	    @Override
+	    public void close(CsvFileSplitConnection connection) throws MuleException {
+		if (rdr != null) {
+		    try {rdr.close();} catch (IOException e) {
+			logger.error("Error closing reader", e);
+		    }
+		    logger.info("Reader closed");
+		}
+	    }
+	};
+    }
 }
+
+
