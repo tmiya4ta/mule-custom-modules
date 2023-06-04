@@ -24,6 +24,7 @@
 
     <flow name="split-csv-from-stream">
       <file:read  config-ref="File_Config" path="test-resources/bom.csv" outputMimeType="application/csv; streaming=true">
+		<non-repeatable-stream />
       </file:read>
       
       <csvfilesplit:split-csv config-ref="config-impl" input="#[payload]" line="500" chunkSize="100"/>

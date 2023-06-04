@@ -71,17 +71,24 @@ public class CsvFileSplitOperationsTestCase extends MuleArtifactFunctionalTestCa
 
   @Test
   public void executeSplitFromStreamOperation() throws Exception {
-	  String path = (String) flowRunner("split-csv-from-stream").run()
+      String[] paths = (String[]) flowRunner("split-csv-from-stream").run()
                                       .getMessage()
                                       .getPayload()
                                       .getValue();
 
-	  
-	  Path filePath = Paths.get(path);
-	  if (!Files.exists(filePath)) {
-	      assertThat(Files.exists(filePath), is(true));
-	  }
-	  Files.delete(filePath);	  
+	  Path filePath = Paths.get(paths[0]);
+	  String fileName = filePath.getFileName().toString();
+    
+
+	  Arrays.asList(paths).forEach(path -> {
+		  try {
+		      Files.delete(Paths.get(path));
+		  } catch (IOException e) {
+		      System.out.println("An error occurred.");
+		      e.printStackTrace();
+		  }});
+	  Files.delete(filePath.getParent());
+	  assertThat(fileName, is("s_00000"));
   }
 
   @Test

@@ -215,38 +215,4 @@ public class CsvFileSplitOperations {
 	}
 	return dstFilePath;
     }
-
-	    
-    // This is a code so as to use concat command.
-    // java.nio functions is faster enough compared with concat command.
-    // Therefore, this code is not used. But I leave this code for reference.
-    
-    // @DisplayName("ConcatByCommand")
-    // @Throws(ExecuteErrorsProvider.class)
-    // @MediaType(value = ANY, strict = false)
-    // public String concatByCommand(@Config CsvFileSplitConfiguration configuration,
-    // 		@DisplayName("Files") @Optional(defaultValue = PAYLOAD) @Expression(ExpressionSupport.SUPPORTED) ArrayList<String> files,
-    // 		@DisplayName("Target File Path") @Optional(defaultValue = "/tmp/result.csv") @Expression(ExpressionSupport.SUPPORTED) String dstFilePath) {
-
-    // 	try {
-    // 		File targetFile = new File(dstFilePath);
-    // 		String cmd = configuration.getConcatCmd();
-
-    // 		ArrayList<String> cmdWithArgs = new ArrayList<String>();
-    // 		cmdWithArgs.add(cmd);
-    // 		cmdWithArgs.addAll(files);
-    // 		ProcessBuilder builder = new ProcessBuilder(cmdWithArgs);
-    // 		builder.redirectOutput(targetFile);
-    // 		builder.redirectErrorStream(true);
-
-    // 		// System.out.println("Command: " + builder.command());
-    // 		Process process = builder.start();
-    // 		process.waitFor();
-    // 	} catch (InterruptedException e) {
-    // 		throw new ModuleException(CsvFileSplitErrors.INTERRUPTED, e);
-    // 	} catch (IOException e) {
-    // 		throw new ModuleException(CsvFileSplitErrors.INVALID_PARAMETER, e);
-    // 	}
-    // 	return dstFilePath;
-    // }
 }
