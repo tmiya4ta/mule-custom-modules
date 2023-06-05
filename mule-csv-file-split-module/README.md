@@ -2,16 +2,22 @@
 
 CSVファイルを分割、連結するモジュールです。
 
-## 設定
-### 分割 (Split)
+# 説明
+
+## 分割 (Split)
 Splitプロセッサで分割を行います。共通設定で、OS付属のsplitコマンドを使用するように設定することも可能です。
+Java実装を使用した場合は、デフォルトで、/tmp/mule-workの下にディレクトリを作成し、S_XXXXXという分割ファイルを作成し
+それらの絶対パスを配列として次のプロセッサへ渡します。
+splitコマンドを使用した場合は、同ディレクトりに、xaa, xab ...といったファイルが作成されます。
+
 | パラメータ  | 説明                                                  | デフォルト   |
 |:----------|:-----------------------------------------------------|:-----------|
 | Src file path  | 分割するファイルパス                                      | payload  |
 | Line  | 1ファイルに格納する行数                                       | 10000   |
 | Chunk size  | 分割処理の単位。デフォルトでは1000行ごとにファイルへ書き込む   | 1000   |
 
-### 連結 (Concat)
+
+## 連結 (Concat)
 Concatプロセッサでファイルの連結を行います。
 分割されたファイルパスを配列でFilesパラメータにてうけとり連結処理を行います。
 デフォルトでは、Filesパラメータにはpayloadが指定されています。
@@ -21,9 +27,10 @@ Concatプロセッサでファイルの連結を行います。
 |:----------|:-----------------------------------------------------|:-----------|
 | Files     | 連結するファイルパス                                      | payload  |
 | Target file path  | 出力先ファイルパス                                | /tmp/result.csv   |
-| Delete temporary files  | 分割したファイルを削除するかどうか指定する   | true   |
+| Delete temporary files  | 分割したファイル（受け取ったファイルリスト上のファイル）を削除するかどうか指定する   | true   |
 
-### 共通設定
+
+## 共通設定
 OSに付属のsplitコマンドを使用する場合は、パスを指定します。(Javaの実装よりも高速です)
 作業用ディレクトリは、[Work dir]へ指定します。デフォルトでは/tmp/mule-workとなっています。
 
@@ -32,9 +39,11 @@ OSに付属のsplitコマンドを使用する場合は、パスを指定しま�
 | External split command     | OS上のsplitコマンドのパス。指定なしの場合はJavaによる実装を使用する     | -  |
 | Work dir  | 指定したディレクトリの下にテンポラリファイルの子ディレクトリを作成し分割ファイルを出力する   | /tmp/mule-work |
 
+# インストール
+
+リポジトリをcloneして、以下のコマンドを実行します。(テストについては実装中)
 ```
-<groupId>com.demo-group</groupId>
-<artifactId>mule-csv-file-split-module</artifactId>
-<version>0.0.55</version>
-<classifier>mule-plugin</classifier>
+$ mvn package -DskipTests
 ```
+targetディレクトリへ出力されたjarファイルをAnypoint StudioのPackage Exploreで右クリックを行い
+[Manage Dependencies] - [Manage Modules]で、jarのインストールを行います。
