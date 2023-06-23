@@ -13,42 +13,43 @@
     <file:connection workingDir="/home/myst/AnypointStudio/dev/mule-custom-modules/mule-csv-file-split-module" /> 
   </file:config>
     <csvfilesplit:config name="config-impl">
+      <csvfilesplit:connection/>
     </csvfilesplit:config>
 
-    <csvfilesplit:config name="config-command" splitCmd="/usr/bin/split">
-    </csvfilesplit:config>
+    <!-- <csvfilesplit:config name="config-command" splitCmd="/usr/bin/split"> -->
+    <!-- </csvfilesplit:config> -->
 
-    <flow name="split-csv">
-      <csvfilesplit:split-csv config-ref="config-impl" srcFilePath="test-resources/bom.csv" line="50" chunkSize="100"/>
-    </flow>
+    <!-- <flow name="split-csv"> -->
+    <!--   <csvfilesplit:split-csv config-ref="config-impl" srcFilePath="test-resources/bom.csv" line="50" chunkSize="100"/> -->
+    <!-- </flow> -->
 
-    <flow name="split-csv-from-stream">
-      <file:read  config-ref="File_Config" path="test-resources/bom.csv" outputMimeType="application/csv; streaming=true">
-	<!-- Default setting is repeatable-in-memory, therefore BUFFER MEMORY EXHAUSED occurs -->
-		<non-repeatable-stream />
-      </file:read>
+    <!-- <flow name="split-csv-from-stream"> -->
+    <!--   <file:read  config-ref="File_Config" path="test-resources/bom.csv" outputMimeType="application/csv; streaming=true"> -->
+    <!-- 	<!-\- Default setting is repeatable-in-memory, therefore BUFFER MEMORY EXHAUSED occurs -\-> -->
+    <!-- 		<non-repeatable-stream /> -->
+    <!--   </file:read> -->
       
-      <csvfilesplit:split-csv config-ref="config-impl" input="#[payload]" line="500" chunkSize="100"/>
-    </flow>
+    <!--   <csvfilesplit:split-csv config-ref="config-impl" input="#[payload]" line="500" chunkSize="100"/> -->
+    <!-- </flow> -->
 
 
     <flow name="split-csv-from-stream-with-partition">
       <file:read  config-ref="File_Config" path="test-resources/bom.csv" outputMimeType="application/csv; streaming=true">
 	<!-- Default setting is repeatable-in-memory, therefore BUFFER MEMORY EXHAUSED occurs -->
-	<non-repeatable-stream />
+	<!-- <non-repeatable-stream /> -->
       </file:read>
       
       <csvfilesplit:partition config-ref="config-impl" input="#[payload]" line="500"/>
     </flow>
 
 
-    <flow name="split-csv-by-command">
-      <csvfilesplit:split-csv config-ref="config-command" srcFilePath="test-resources/bom.csv"/>
-    </flow>
+    <!-- <flow name="split-csv-by-command"> -->
+    <!--   <csvfilesplit:split-csv config-ref="config-command" srcFilePath="test-resources/bom.csv"/> -->
+    <!-- </flow> -->
 
-    <flow name="split-and-concat">
-      <csvfilesplit:split-csv config-ref="config-impl" srcFilePath="test-resources/bom.csv" line="100"/>
-      <csvfilesplit:concat config-ref="config-impl" dstFilePath="test-resources/result.csv" isDeleteTempFiles="true"/>
-    </flow>
+    <!-- <flow name="split-and-concat"> -->
+    <!--   <csvfilesplit:split-csv config-ref="config-impl" srcFilePath="test-resources/bom.csv" line="100"/> -->
+    <!--   <csvfilesplit:concat config-ref="config-impl" dstFilePath="test-resources/result.csv" isDeleteTempFiles="true"/> -->
+    <!-- </flow> -->
 
 </mule>

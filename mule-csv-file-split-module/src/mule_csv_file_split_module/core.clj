@@ -3,7 +3,7 @@
   (:import [java.nio.file Paths Path StandardOpenOption]
            [java.nio.channels FileChannel])
   (:require
-   [silvur.nio]
+   [silvur.util :refer [json->edn]]
    [clojure.tools.cli :refer (parse-opts)]
    [clojure.string :as str]
    [clojure.java.io :as io]))

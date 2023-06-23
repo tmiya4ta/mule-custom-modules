@@ -226,12 +226,12 @@ public class CsvFileSplitOperations {
     @DisplayName("Partition")
     @Throws(ExecuteErrorsProvider.class)
     @MediaType(value = ANY, strict = false)
-    public  PagingProvider<CsvFileSplitConnection, List<Map<String, String>>> partition(@Config CsvFileSplitConfiguration configuration,
+    public  PagingProvider<CsvFileSplitConnection, String[]> partition(@Config CsvFileSplitConfiguration configuration,
 				 @Expression(ExpressionSupport.SUPPORTED) @Optional(defaultValue = PAYLOAD) InputStream input,
 				 @Expression(ExpressionSupport.SUPPORTED) @Optional(defaultValue = "10000") @Summary("Lines in a file") String line) {
 
 	
-	return new PagingProvider<CsvFileSplitConnection, List<Map<String, String>>>() {
+	return new PagingProvider<CsvFileSplitConnection, String[]>() {
 	    private BufferedReader rdr = null;
 	    
 	    private final AtomicBoolean initialised = new AtomicBoolean(false);
@@ -243,39 +243,45 @@ public class CsvFileSplitOperations {
 	    }
 	    
 	    @Override
-	    public List<List<Map<String, String>>> getPage(CsvFileSplitConnection connection) {
+	    public List<String[]> getPage(CsvFileSplitConnection connection) {
 		if (initialised.compareAndSet(false, true)) {
 		    initializePagingProvider(connection);
 		}
-		List<Map<String, String>> lines = new ArrayList<Map<String, String>>();
+		ArrayList<String[]> lines = new ArrayList<String[]>();
 		int unitNum = Integer.parseInt(line);
 		logger.trace("unitNum: " + unitNum);
-		
+
 		for (int i = 0; i < unitNum; i++) {
 		    try {
 			String line = rdr.readLine();
 			if (line == null) {
 			    break;
 			}
-			Map<String, String> map = new HashMap<String, String>();
+			//Map<String, String> map = new HashMap<String, String>();
 			String[] cols = line.split(",");
-
-			for (int j = 0; j < cols.length; j++) {
-			    map.put("column_" + j, cols[j]);
-			}
 			
-			lines.add(map);
+			// for (int j = 0; j < cols.length; j++) {
+			//     map.put("column_" + j, cols[j]);
+			// }
+			
+			lines.add(cols);
 		    } catch (IOException e) {
 			logger.error("Error reading line", e);
 			throw new ModuleException(CsvFileSplitErrors.INVALID_PARAMETER, e);
 		    }
 		}
 
+		logger.info("lines.size(): " + lines.size());
+		
 		if (lines.size() == 0) {
 		    logger.info("No more data");
 		    return null;
 		} else {
-		    return new ArrayList<List<Map<String, String>>>(Arrays.asList(lines));
+		    return lines;
+		    // ArrayList<List<String[]>> result = new ArrayList<List<String[]>>();
+		    // result.add(lines);
+		    // return result;
+		    
 		}
 	    }
 

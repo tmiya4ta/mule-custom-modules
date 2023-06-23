@@ -4,3 +4,11 @@ Content-Type: application/json
 "cmd": "/usr/bin/split",
 "path": "/tmp/mule-demo/data/waiting/bom-755M.csv"
 }
+
+#
+POST http://localhost:9091/partition
+Content-Type: application/json
+{
+"line": 10,
+"src": "/home/myst/AnypointStudio/dev/mule-custom-modules/mule-csv-file-split-module/test-resources/bom-755M.csv"
+}

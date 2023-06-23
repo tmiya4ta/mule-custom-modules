@@ -31,8 +31,8 @@ public class CsvFileSplitConnectionProvider implements PoolingConnectionProvider
  /**
   * A parameter that is always required to be configured.
   */
-  @Parameter
-  private String requiredParameter;
+  // @Parameter
+  // private String requiredParameter;
 
  /**
   * A parameter that is not required to be configured by the user.
@@ -44,7 +44,8 @@ public class CsvFileSplitConnectionProvider implements PoolingConnectionProvider
 
   @Override
   public CsvFileSplitConnection connect() throws ConnectionException {
-    return new CsvFileSplitConnection(requiredParameter + ":" + optionalParameter);
+      //return new CsvFileSplitConnection(requiredParameter + ":" + optionalParameter);
+      return new CsvFileSplitConnection("id");
   }
 
   @Override
