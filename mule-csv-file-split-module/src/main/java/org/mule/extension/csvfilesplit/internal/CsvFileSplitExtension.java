@@ -5,6 +5,7 @@ import org.mule.runtime.extension.api.annotation.Configurations;
 import org.mule.runtime.extension.api.annotation.connectivity.ConnectionProviders;
 import org.mule.runtime.extension.api.annotation.dsl.xml.Xml;
 import org.mule.runtime.extension.api.annotation.error.ErrorTypes;
+import org.mule.runtime.extension.api.annotation.Operations;
 
 
 /**
@@ -15,7 +16,7 @@ import org.mule.runtime.extension.api.annotation.error.ErrorTypes;
 @Extension(name = "CsvFileSplit")
 @ErrorTypes(CsvFileSplitErrors.class)
 @Configurations(CsvFileSplitConfiguration.class)
-@ConnectionProviders(CsvFileSplitConnectionProvider.class)
+
 public class CsvFileSplitExtension {
 
 }

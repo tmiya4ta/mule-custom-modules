@@ -1,8 +1,5 @@
 package org.mule.extension.csvfilesplit.internal;
 
-import static org.mule.runtime.extension.api.annotation.param.MediaType.ANY;
-import org.mule.runtime.extension.api.annotation.param.display.Summary;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -30,9 +27,12 @@ import java.util.List;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
-
+import java.util.stream.Collectors;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.extension.api.annotation.param.MediaType;
+import static org.mule.runtime.extension.api.annotation.param.MediaType.ANY;
+import static org.mule.runtime.extension.api.annotation.param.MediaType.APPLICATION_CSV;
+import org.mule.runtime.extension.api.annotation.param.display.Summary;
 import org.mule.runtime.extension.api.annotation.param.Optional;
 import org.mule.runtime.extension.api.annotation.param.NullSafe;
 import org.mule.runtime.extension.api.annotation.param.Parameter;
@@ -47,6 +47,8 @@ import org.mule.runtime.api.meta.ExpressionSupport;
 import org.mule.runtime.api.scheduler.Scheduler;
 import org.mule.runtime.extension.api.runtime.streaming.PagingProvider;
 import org.mule.runtime.extension.api.runtime.operation.Result;
+import org.mule.runtime.extension.api.runtime.process.CompletionCallback;
+import org.mule.runtime.extension.api.runtime.route.Chain;
     
 import static org.mule.runtime.extension.api.annotation.param.Optional.PAYLOAD;
 import org.slf4j.Logger;
@@ -144,11 +146,13 @@ public class CsvFileSplitOperations {
     @DisplayName("Split")
     @Throws(ExecuteErrorsProvider.class)
     @MediaType(value = ANY, strict = false)
-    public String[] splitCsv(@Config CsvFileSplitConfiguration configuration,
-			     @Expression(ExpressionSupport.SUPPORTED) @Optional String srcFilePath,
-			     @Expression(ExpressionSupport.SUPPORTED) @Optional(defaultValue = PAYLOAD) InputStream input,
-			     @Expression(ExpressionSupport.SUPPORTED) @Optional(defaultValue = "10000") @Summary("Lines in a file") String line,
-			     @Optional(defaultValue = "1000") @Summary("Unit lines for a split operation as a batch") long chunkSize) {
+    public String[]   splitCsv(@Config CsvFileSplitConfiguration configuration,
+									@Expression(ExpressionSupport.SUPPORTED) @Optional String srcFilePath,
+									@Expression(ExpressionSupport.SUPPORTED) @Optional(defaultValue = PAYLOAD) InputStream input,
+									@Expression(ExpressionSupport.SUPPORTED) @Optional(defaultValue = "10000") @Summary("Lines in a file") String line,
+									@Optional(defaultValue = "1000") @Summary("Unit lines for a split operation as a batch") long chunkSize) {
+
+
 	    
 	Stream<Path> result;
 	try {
@@ -169,14 +173,13 @@ public class CsvFileSplitOperations {
 		result = splitCsvByImpl(tmpDir, path, input, unitNum, chunkSize);
 	    } else {
 		result = splitCsvByCmd(cmd, tmpDir, path, unitNum);
-		// result = splitCsvByCmd(configuration, srcFilePath, line);
 	    }
 	} catch (InterruptedException e) {
 	    throw new ModuleException(CsvFileSplitErrors.INTERRUPTED, e);
 	} catch (IOException e) {
 	    throw new ModuleException(CsvFileSplitErrors.INVALID_PARAMETER, e);
 	}
-
+	
 	return result.map((x) -> x.toString()).toArray(String[]::new);
     }
 
@@ -257,12 +260,7 @@ public class CsvFileSplitOperations {
 			if (line == null) {
 			    break;
 			}
-			//Map<String, String> map = new HashMap<String, String>();
 			String[] cols = line.split(",");
-			
-			// for (int j = 0; j < cols.length; j++) {
-			//     map.put("column_" + j, cols[j]);
-			// }
 			
 			lines.add(cols);
 		    } catch (IOException e) {
@@ -278,10 +276,6 @@ public class CsvFileSplitOperations {
 		    return null;
 		} else {
 		    return lines;
-		    // ArrayList<List<String[]>> result = new ArrayList<List<String[]>>();
-		    // result.add(lines);
-		    // return result;
-		    
 		}
 	    }
 
@@ -301,6 +295,18 @@ public class CsvFileSplitOperations {
 	    }
 	};
     }
+
+    // public void pmap(Chain operations, CompletionCallback<Object, Object> callback) {		     
+    // 	operations.process(
+    // 			   result -> {
+    // 			       logger.info("Success");
+    // 			       callback.success(result);
+    // 			   },
+    // 			   (error, previous) -> {
+    // 			       callback.error(error);
+    // 			   });
+    // }
+
 }
 
 

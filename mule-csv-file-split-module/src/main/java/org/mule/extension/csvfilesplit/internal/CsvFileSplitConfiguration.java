@@ -18,16 +18,8 @@ import org.mule.runtime.api.meta.model.display.PathModel.Type;
  * operations since they represent something core from the extension.
  */
 @Operations(CsvFileSplitOperations.class)
-// @ConnectionProviders(CsvFileSplitConnectionProvider.class)
+@ConnectionProviders(CsvFileSplitConnectionProvider.class)
 public class CsvFileSplitConfiguration {
-
-    // @Parameter
-    // private CsvFileSplitCommandProperties param;
-	
-	// @Parameter
-	// @DisplayName("Use external split command")
-	// @Optional
-	// private boolean useExternalSplitCommand;
 
 	@Parameter
 	@Path(type = Type.FILE, acceptsUrls = false)
