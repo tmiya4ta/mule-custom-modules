@@ -124,6 +124,7 @@ public class CsvFileSplitOperations {
 	    String remainedContent = sj.toString();
 	    logger.info("Remained length: " + remainedContent.length());
 	    if (1 < remainedContent.length()) {
+		remainedContent += "\n";
 		outFileName = "s_" + fileSeqNum;
 		outPath = fs.getPath(tmpDir, outFileName);
 		Files.write(outPath, remainedContent.getBytes());
