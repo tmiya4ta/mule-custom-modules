@@ -96,7 +96,8 @@ public class CsvFileSplitOperationsTestCase extends MuleArtifactFunctionalTestCa
 	runFlowAndAssertResult(10000,"split-csv-from-stream-50-100-200");
     }
 
-    @Test
+    // You should prepare large file due to limitation of github for upload of large file.
+    // @Test
     public void executeSplitLargeFileAndConcatOperation_50_100_200() throws Exception {
 	runFlowAndAssertResult(100000000, "split-csv-large-file-50-100-200");
     }
