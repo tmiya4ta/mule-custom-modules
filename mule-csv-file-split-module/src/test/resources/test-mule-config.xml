@@ -22,35 +22,36 @@
       <csvfilesplit:connection/>
     </csvfilesplit:config>
 
-    <!-- <csvfilesplit:config name="config-command" splitCmd="/usr/bin/split"> -->
-    <!-- </csvfilesplit:config> -->
+    <flow name="split-csv-only-500-100-20">
+      <csvfilesplit:split-csv config-ref="config-impl" srcFilePath="test-resources/bom.csv" line="500" chunkSize="100"/>
+    </flow>
 
     <flow name="split-csv-50-100-200">
       <csvfilesplit:split-csv config-ref="config-impl" srcFilePath="test-resources/bom.csv" line="50" chunkSize="100"/>
-      <csvfilesplit:concat config-ref="config-impl" dstFilePath="/tmp/result-50-100-200.csv"  isDeleteTempFiles="false"/>
+      <csvfilesplit:concat config-ref="config-impl" dstFilePath="/tmp/mule-work/result-50-100-200.csv"  isDeleteTempFiles="false"/>
     </flow>
 
     <flow name="split-csv-22-33-455">
       <csvfilesplit:split-csv config-ref="config-impl" srcFilePath="test-resources/bom.csv" line="22" chunkSize="33"/>
-      <csvfilesplit:concat config-ref="config-impl" dstFilePath="/tmp/result-22-33-455.csv"  isDeleteTempFiles="false"/>
+      <csvfilesplit:concat config-ref="config-impl" dstFilePath="/tmp/mule-work/result-22-33-455.csv"  isDeleteTempFiles="false"/>
     </flow>
 
     <!-- larger line option than actual file -->
     <flow name="split-csv-50000-100-1">
       <csvfilesplit:split-csv config-ref="config-impl" srcFilePath="test-resources/bom.csv" line="50000" chunkSize="100"/>
-      <csvfilesplit:concat config-ref="config-impl" dstFilePath="/tmp/result-50000-100-1.csv"  isDeleteTempFiles="false"/>
+      <csvfilesplit:concat config-ref="config-impl" dstFilePath="/tmp/mule-work/result-50000-100-1.csv"  isDeleteTempFiles="false"/>
     </flow>
 
     <!-- larger line option than actual file -->
     <flow name="split-csv-100-50000-1">
       <csvfilesplit:split-csv config-ref="config-impl" srcFilePath="test-resources/bom.csv" line="100" chunkSize="50000"/>
-      <csvfilesplit:concat config-ref="config-impl" dstFilePath="/tmp/result-100-50000-1.csv"  isDeleteTempFiles="false"/>
+      <csvfilesplit:concat config-ref="config-impl" dstFilePath="/tmp/mule-work/result-100-50000-1.csv"  isDeleteTempFiles="false"/>
     </flow>
 
 
     <flow name="split-csv-by-cmd-50-100-200">
       <csvfilesplit:split-csv config-ref="config-impl-cmd" srcFilePath="test-resources/bom.csv" line="50" chunkSize="100"/>
-      <csvfilesplit:concat config-ref="config-impl-cmd" dstFilePath="/tmp/result-by-cmd-50-100-200.csv"  isDeleteTempFiles="false"/>
+      <csvfilesplit:concat config-ref="config-impl-cmd" dstFilePath="/tmp/mule-work/result-by-cmd-50-100-200.csv"  isDeleteTempFiles="false"/>
     </flow>
 
     <flow name="split-csv-from-stream-50-100-200">
@@ -60,12 +61,12 @@
       </file:read>
       
       <csvfilesplit:split-csv config-ref="config-impl" input="#[payload]" line="50" chunkSize="100"/>
-      <csvfilesplit:concat config-ref="config-impl" dstFilePath="/tmp/result-stream-50-100-200.csv"  isDeleteTempFiles="false"/>
+      <csvfilesplit:concat config-ref="config-impl" dstFilePath="/tmp/mule-work/result-stream-50-100-200.csv"  isDeleteTempFiles="false"/>
     </flow>
 
     <flow name="split-csv-large-file-50-100-200">
       <csvfilesplit:split-csv config-ref="config-impl" srcFilePath="test-resources/bom-G.csv" line="1100000" chunkSize="930"/>
-      <csvfilesplit:concat config-ref="config-impl" dstFilePath="/tmp/result-large-50-100-200.csv"  isDeleteTempFiles="false"/>
+      <csvfilesplit:concat config-ref="config-impl" dstFilePath="/tmp/mule-work/result-large-50-100-200.csv"  isDeleteTempFiles="false"/>
     </flow>
 
 

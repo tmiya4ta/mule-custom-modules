@@ -6,6 +6,8 @@ import static org.hamcrest.Matchers.*;
 import static org.hamcrest.core.Is.is;
 import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
 import org.junit.Test;
+import org.junit.Before;
+
 import java.util.Arrays;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -40,6 +42,8 @@ public class CsvFileSplitOperationsTestCase extends MuleArtifactFunctionalTestCa
 	Files.delete(Paths.get(paths[0]).getParent());
     }
 
+
+    
     private void assertResultLineCount(long count, String filePath, boolean isDeleteResultFile) throws IOException {
 
 	Path path = Paths.get(filePath);
@@ -64,7 +68,45 @@ public class CsvFileSplitOperationsTestCase extends MuleArtifactFunctionalTestCa
 	    .getValue();
 	assertResultLineCount(count, dstPathStr, false);	
     }
+
+
+    @Before
+    // Clean CSV in /tmp
+    public void setup() {
+	try {
+	    Files.list(Paths.get("/tmp/mule-work"))
+		.filter(Files::isRegularFile)
+		.filter(path -> path.toString().endsWith(".csv"))
+		.forEach(path -> {
+			try {
+			    Files.delete(path);
+			} catch (IOException e) {
+			    System.out.println("An error occurred.");
+			    e.printStackTrace();
+			}});
+
+	} catch (IOException e) {
+	    System.out.println("An error occurred.");
+	    e.printStackTrace();
+	}
+    }
+
     // Test
+
+    @Test
+    public void executeSplitCsvOnly_500_100_20() throws Exception {
+	String[] dstPathArray = (String[]) flowRunner("split-csv-only-500-100-20").run()
+	    .getMessage()
+	    .getPayload()
+	    .getValue();
+
+	assertThat(dstPathArray.length, is(equalTo(20)));
+    }
+
+    @Test
+    public void executeSplitCsvAndConcatOperation_50_100_200() throws Exception {
+	runFlowAndAssertResult(10000, "split-csv-50-100-200");
+    }
     
     @Test
     public void executeSplitCsvAndConcatOperation_22_33_455() throws Exception {
@@ -81,10 +123,6 @@ public class CsvFileSplitOperationsTestCase extends MuleArtifactFunctionalTestCa
 	runFlowAndAssertResult(10000, "split-csv-100-50000-1");
     }
 
-    @Test
-    public void executeSplitCsvAndConcatOperation_50_100_200() throws Exception {
-	runFlowAndAssertResult(10000, "split-csv-50-100-200");
-    }
 
     @Test
     public void executeSplitCsvByCmdAndConcatOperation_50_100_200() throws Exception {

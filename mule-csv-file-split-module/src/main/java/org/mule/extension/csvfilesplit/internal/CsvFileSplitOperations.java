@@ -60,6 +60,8 @@ import org.slf4j.LoggerFactory;
  * This class is a container for operations, every public method in this class
  * will be taken as an extension operation.
  */
+
+
 public class CsvFileSplitOperations {
     static Logger logger = LoggerFactory.getLogger(CsvFileSplitOperations.class);
     
@@ -144,6 +146,15 @@ public class CsvFileSplitOperations {
 
     }
 
+    private void cleanTmpDir(String tmpDir) {
+	try {
+	    Arrays.stream(Paths.get(tmpDir).toFile().listFiles()).forEach(File::delete);
+	    Files.delete(Paths.get(tmpDir));
+	} catch (IOException e) {
+	    e.printStackTrace();
+	}
+    }
+
     @DisplayName("Split")
     @Throws(ExecuteErrorsProvider.class)
     @MediaType(value = ANY, strict = false)
@@ -156,10 +167,12 @@ public class CsvFileSplitOperations {
 
 	    
 	Stream<Path> result;
+	String tmpDir = "";
+	
 	try {
 	    String workDir = configuration.getWorkDir();
 	    Files.createDirectories(Paths.get(workDir));
-	    String tmpDir = Files.createTempDirectory(Paths.get(workDir), "mule-").toFile().getAbsolutePath();
+	    tmpDir = Files.createTempDirectory(Paths.get(workDir), "mule-").toFile().getAbsolutePath();
 	    
 	    long unitNum = Long.parseLong(line);
 
@@ -176,8 +189,10 @@ public class CsvFileSplitOperations {
 		result = splitCsvByCmd(cmd, tmpDir, path, unitNum);
 	    }
 	} catch (InterruptedException e) {
+	    cleanTmpDir(tmpDir);
 	    throw new ModuleException(CsvFileSplitErrors.INTERRUPTED, e);
 	} catch (IOException e) {
+	    cleanTmpDir(tmpDir);
 	    throw new ModuleException(CsvFileSplitErrors.INVALID_PARAMETER, e);
 	}
 	
