@@ -171,13 +171,27 @@ public class CsvFileSplitOperations {
 	}
     }
 
-    @DisplayName("Clean Temporary")
+    @DisplayName("Clean Work Directory")
     @MediaType(value = ANY, strict = false)
-    public void   cleanTemporaryDir(@Config CsvFileSplitConfiguration configuration) {
+    public void   cleanWorkDir(@Config CsvFileSplitConfiguration configuration,
+			       @Expression(ExpressionSupport.SUPPORTED) @Optional String correlationId,
+			       @DisplayName("Delete root work directory") @Optional(defaultValue = "true") @Expression(ExpressionSupport.SUPPORTED) @Summary("Delete all directories including root work directory ex. /tmp/mule-work") boolean isDeleteWorkDir) {
 					   
 
-	String workDir = configuration.getWorkDir();
-	cleanDirRecursively(workDir);
+	String rootWorkDir = configuration.getWorkDir();
+	String workDir = rootWorkDir;
+	
+	if (correlationId != null) {
+	    workDir += File.separator + correlationId;
+	    cleanDirRecursively(workDir);
+	} else {
+	    logger.warn("correlationId is not specified. Skip cleaning work directory.");
+	}
+	
+
+	if (isDeleteWorkDir) {
+	    cleanDirRecursively(rootWorkDir);
+	}
 	
     }
 
@@ -186,10 +200,11 @@ public class CsvFileSplitOperations {
     @Throws(ExecuteErrorsProvider.class)
     @MediaType(value = ANY, strict = false)
     public String[]   splitCsv(@Config CsvFileSplitConfiguration configuration,
-									@Expression(ExpressionSupport.SUPPORTED) @Optional String srcFilePath,
-									@Expression(ExpressionSupport.SUPPORTED) @Optional(defaultValue = PAYLOAD) InputStream input,
-									@Expression(ExpressionSupport.SUPPORTED) @Optional(defaultValue = "10000") @Summary("Lines in a file") String line,
-									@Optional(defaultValue = "1000") @Summary("Unit lines for a split operation as a batch") long chunkSize) {
+			       @Expression(ExpressionSupport.SUPPORTED) @Optional @Summary("Use this id as temporary directory to store divided files") String correlationId,
+			       @Expression(ExpressionSupport.SUPPORTED) @Optional String srcFilePath,
+			       @Expression(ExpressionSupport.SUPPORTED) @Optional(defaultValue = PAYLOAD) InputStream input,
+			       @Expression(ExpressionSupport.SUPPORTED) @Optional(defaultValue = "10000") @Summary("Lines in a file") String line,
+			       @Optional(defaultValue = "1000") @Summary("Unit lines for a split operation as a batch") long chunkSize) {
 
 
 	    
@@ -199,7 +214,11 @@ public class CsvFileSplitOperations {
 	try {
 	    String workDir = configuration.getWorkDir();
 	    Files.createDirectories(Paths.get(workDir));
-	    tmpDir = Files.createTempDirectory(Paths.get(workDir), "mule-").toFile().getAbsolutePath();
+	    if (correlationId == null) {
+		tmpDir = Files.createTempDirectory(Paths.get(workDir), "").toFile().getAbsolutePath();
+	    } else {
+		tmpDir = Files.createDirectories(Paths.get(workDir, correlationId)).toFile().getAbsolutePath();
+	    }
 	    
 	    long unitNum = Long.parseLong(line);
 

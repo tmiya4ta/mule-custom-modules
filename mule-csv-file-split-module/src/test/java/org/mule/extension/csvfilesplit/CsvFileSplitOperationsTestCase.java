@@ -147,8 +147,17 @@ public class CsvFileSplitOperationsTestCase extends MuleArtifactFunctionalTestCa
 
     @Test
     // Added prefix z to run this test at last.
-    public void z_executeCleanDir() throws Exception {
-	flowRunner("clean-temporary-dir").run();
+    public void z0_executeCleanDir() throws Exception {
+	flowRunner("clean-temporary-dir-test-1").run();
+
+	assertThat(Files.exists(Paths.get("/tmp/mule-work/test-1")), is(false));
+
+    }
+
+    @Test
+    // Added prefix z to run this test at last.
+    public void z1_executeCleanDir() throws Exception {
+	flowRunner("clean-temporary-dir-all").run();
 
 	assertThat(Files.exists(Paths.get("/tmp/mule-work")), is(false));
 
