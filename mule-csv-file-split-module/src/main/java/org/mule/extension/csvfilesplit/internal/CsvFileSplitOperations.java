@@ -134,7 +134,7 @@ public class CsvFileSplitOperations {
 
 	} catch (IOException e) {
 	    e.printStackTrace();
-	    throw new ModuleException(CsvFileSplitErrors.INTERRUPTED, e);
+	    throw e;
 	}  finally {
 	    if (rdr !=null) {
 		rdr.close();
@@ -146,15 +146,42 @@ public class CsvFileSplitOperations {
 
     }
 
-    private void cleanTmpDir(String tmpDir) {
+
+    static private void cleanDirRecursively(String pathString) {
 	try {
-	    Arrays.stream(Paths.get(tmpDir).toFile().listFiles()).forEach(File::delete);
-	    Files.delete(Paths.get(tmpDir));
+	    Path path = Paths.get(pathString);
+	    if (path.toFile().exists()) {
+		Stream<Path> files = Files.list(path);
+		files.forEach(file -> {
+			try {
+			    if (file.toFile().isDirectory()) {
+				cleanDirRecursively(file.toString());
+			    } else {
+				Files.delete(file);
+			    }
+			} catch (IOException e) {
+			    e.printStackTrace();
+			}
+		    });
+	    }
+	    Files.delete(path);
 	} catch (IOException e) {
 	    e.printStackTrace();
+	    logger.warn("Failed to delete " + pathString);
 	}
     }
 
+    @DisplayName("Clean Temporary")
+    @MediaType(value = ANY, strict = false)
+    public void   cleanTemporaryDir(@Config CsvFileSplitConfiguration configuration) {
+					   
+
+	String workDir = configuration.getWorkDir();
+	cleanDirRecursively(workDir);
+	
+    }
+
+	
     @DisplayName("Split")
     @Throws(ExecuteErrorsProvider.class)
     @MediaType(value = ANY, strict = false)
@@ -189,10 +216,10 @@ public class CsvFileSplitOperations {
 		result = splitCsvByCmd(cmd, tmpDir, path, unitNum);
 	    }
 	} catch (InterruptedException e) {
-	    cleanTmpDir(tmpDir);
+	    cleanDirRecursively(tmpDir);
 	    throw new ModuleException(CsvFileSplitErrors.INTERRUPTED, e);
 	} catch (IOException e) {
-	    cleanTmpDir(tmpDir);
+	    cleanDirRecursively(tmpDir);
 	    throw new ModuleException(CsvFileSplitErrors.INVALID_PARAMETER, e);
 	}
 	
@@ -205,11 +232,12 @@ public class CsvFileSplitOperations {
     public String concat(@Config CsvFileSplitConfiguration configuration,
 			 @DisplayName("Files") @Optional(defaultValue = PAYLOAD) @Expression(ExpressionSupport.SUPPORTED) @NullSafe ArrayList<String> files,
 			 @DisplayName("Target file path") @Optional(defaultValue = "/tmp/result.csv") @Expression(ExpressionSupport.SUPPORTED) String dstFilePath,
-			 @DisplayName("Delete temporary files") @Optional(defaultValue = "true") @Expression(ExpressionSupport.SUPPORTED) boolean isDeleteTempFiles) {
+			 @DisplayName("Delete given files") @Optional(defaultValue = "true") @Summary("Delete given files after concatenation") @Expression(ExpressionSupport.SUPPORTED) boolean isDeleteTempFiles) {
 
 	File dstFile = new File(dstFilePath);
 	FileChannel dstChannel = null;
 	try {
+	    Files.deleteIfExists(dstFile.toPath());
 	    dstChannel = FileChannel.open(dstFile.toPath(), StandardOpenOption.CREATE, StandardOpenOption.WRITE, StandardOpenOption.APPEND);
 	    for (String file : files) {
 		File srcFile = new File(file);
@@ -228,10 +256,7 @@ public class CsvFileSplitOperations {
 			File srcFile = new File(file);
 			srcFile.delete();
 		    }
-		    String firstFile = files.get(0);
-		    Path filePath = Paths.get(firstFile);
-		    logger.info("Delete temporary directory: " + filePath.getParent());
-		    Files.delete(filePath.getParent());
+		    logger.info("Deleted temporary files");
 		}
 		    
 	    } catch (IOException e) {

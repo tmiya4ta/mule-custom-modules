@@ -1,3 +1,4 @@
+
 package org.mule.extension.csvfilesplit;
 
 import static org.hamcrest.MatcherAssert.*;
@@ -7,6 +8,8 @@ import static org.hamcrest.core.Is.is;
 import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
 import org.junit.Test;
 import org.junit.Before;
+import org.junit.FixMethodOrder;
+import org.junit.runners.MethodSorters;
 
 import java.util.Arrays;
 import java.nio.file.Files;
@@ -22,7 +25,9 @@ import java.nio.file.Paths;
 // import org.mule.runtime.extension.api.runtime.streaming.PagingProvider;
 import org.mule.extension.csvfilesplit.internal.CsvFileSplitConnection;
 import org.mule.runtime.core.internal.streaming.object.ManagedCursorIteratorProvider;
-    
+
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
+
 public class CsvFileSplitOperationsTestCase extends MuleArtifactFunctionalTestCase {
 
     @Override
@@ -73,17 +78,21 @@ public class CsvFileSplitOperationsTestCase extends MuleArtifactFunctionalTestCa
     @Before
     // Clean CSV in /tmp
     public void setup() {
+	Path tmpPath = Paths.get("/tmp/mule-work");
+	
 	try {
-	    Files.list(Paths.get("/tmp/mule-work"))
-		.filter(Files::isRegularFile)
-		.filter(path -> path.toString().endsWith(".csv"))
-		.forEach(path -> {
-			try {
-			    Files.delete(path);
-			} catch (IOException e) {
-			    System.out.println("An error occurred.");
-			    e.printStackTrace();
-			}});
+	    if(Files.exists(tmpPath)) {
+		Files.list(Paths.get("/tmp/mule-work"))
+		    .filter(Files::isRegularFile)
+		    .filter(path -> path.toString().endsWith(".csv"))
+		    .forEach(path -> {
+			    try {
+				Files.delete(path);
+			    } catch (IOException e) {
+				System.out.println("An error occurred.");
+				e.printStackTrace();
+			    }});
+	    }
 
 	} catch (IOException e) {
 	    System.out.println("An error occurred.");
@@ -134,11 +143,24 @@ public class CsvFileSplitOperationsTestCase extends MuleArtifactFunctionalTestCa
 	runFlowAndAssertResult(10000,"split-csv-from-stream-50-100-200");
     }
 
+
+
+    @Test
+    // Added prefix z to run this test at last.
+    public void z_executeCleanDir() throws Exception {
+	flowRunner("clean-temporary-dir").run();
+
+	assertThat(Files.exists(Paths.get("/tmp/mule-work")), is(false));
+
+    }
+
+
     // You should prepare large file due to limitation of github for upload of large file.
     // @Test
     public void executeSplitLargeFileAndConcatOperation_50_100_200() throws Exception {
 	runFlowAndAssertResult(100000000, "split-csv-large-file-50-100-200");
     }
+
 
 
 }
