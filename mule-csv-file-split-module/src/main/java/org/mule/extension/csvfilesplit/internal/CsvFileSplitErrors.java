@@ -8,6 +8,7 @@ import org.mule.runtime.extension.api.error.MuleErrors;
 public enum CsvFileSplitErrors implements ErrorTypeDefinition<CsvFileSplitErrors> {
     INVALID_PARAMETER,
     INTERRUPTED,
+    IO_OPERATION_FAILED,
     ILLEGAL_ACTION;
     private ErrorTypeDefinition<? extends Enum<?>> parent;
 
