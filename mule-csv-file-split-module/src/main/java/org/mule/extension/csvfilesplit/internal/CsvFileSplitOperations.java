@@ -106,8 +106,12 @@ public class CsvFileSplitOperations {
 		sj.add(text);
 		chunkCounter++;
 		lineCounter++;
-			    
-		if (((chunkCounter == chunkSize) && (lineCounter < unitNum) || (lineCounter == unitNum))) {
+
+
+		// If chunkSize > unitNum 
+		if (((chunkCounter == chunkSize) && (lineCounter < unitNum)) || (lineCounter == unitNum)) {
+
+		    // The number of files should be below 10000 (s_00000 - s_99999)
 		    outFileName = "s_" + String.format("%05d", fileSeqNum);
 		    outPath = fs.getPath(tmpDir, outFileName);
 		    String content = sj.toString() + "\n";
@@ -115,9 +119,8 @@ public class CsvFileSplitOperations {
 		    sj = new StringJoiner("\n");
 		    chunkCounter = 0;
 		} 
-
+		
 		if(lineCounter == unitNum) {
-		    chunkCounter = 0;
 		    lineCounter = 0;
 		    fileSeqNum++;
 		}

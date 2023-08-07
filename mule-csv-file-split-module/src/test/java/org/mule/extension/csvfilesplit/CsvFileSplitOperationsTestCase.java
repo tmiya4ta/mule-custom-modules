@@ -113,6 +113,26 @@ public class CsvFileSplitOperationsTestCase extends MuleArtifactFunctionalTestCa
     }
 
     @Test
+    public void executeSplitCsvOnly_50_100_200() throws Exception {
+	String[] dstPathArray = (String[]) flowRunner("split-csv-only-50-100-200").run()
+	    .getMessage()
+	    .getPayload()
+	    .getValue();
+
+	assertThat(dstPathArray.length, is(equalTo(200)));
+    }
+
+    @Test
+    public void executeSplitCsvOnly_1000_1000_10() throws Exception {
+	String[] dstPathArray = (String[]) flowRunner("split-csv-only-1000-1000-10").run()
+	    .getMessage()
+	    .getPayload()
+	    .getValue();
+
+	assertThat(dstPathArray.length, is(equalTo(10)));
+    }
+
+    @Test
     public void executeSplitCsvAndConcatOperation_50_100_200() throws Exception {
 	runFlowAndAssertResult(10000, "split-csv-50-100-200");
     }
