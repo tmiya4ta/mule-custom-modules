@@ -92,7 +92,9 @@ output application/json
     </flow>
 
     <flow name="test-csv-stream-flow">
-        <http:listener config-ref="HTTP_Listener_config" path="/test/csv-stream">
+        <http:listener config-ref="HTTP_Listener_config" path="/test/csv-stream"
+                        outputMimeType="text/csv; streaming=true">
+            <non-repeatable-stream />
             <http:response statusCode="200">
                 <http:headers><![CDATA[#[{'Content-Type': 'application/json'}]]]></http:headers>
             </http:response>
@@ -122,7 +124,9 @@ output application/json
     </flow>
 
     <flow name="test-json-stream-flow">
-        <http:listener config-ref="HTTP_Listener_config" path="/test/json-stream">
+        <http:listener config-ref="HTTP_Listener_config" path="/test/json-stream"
+                        outputMimeType="application/json; streaming=true">
+            <non-repeatable-stream />
             <http:response statusCode="200">
                 <http:headers><![CDATA[#[{'Content-Type': 'application/json'}]]]></http:headers>
             </http:response>
