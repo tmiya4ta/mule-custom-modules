@@ -88,8 +88,8 @@ public class DataPartitionOperations {
     public PagingProvider<DataPartitionConnection, InputStream> partitionCsv(
             @Config DataPartitionConfiguration configuration,
             @Expression(ExpressionSupport.SUPPORTED) @Optional(defaultValue = PAYLOAD) InputStream input,
-            @Expression(ExpressionSupport.SUPPORTED) @Optional(defaultValue = "50")
-            @Summary("Partition size") int partitionSize,
+            @Expression(ExpressionSupport.SUPPORTED) @Optional(defaultValue = "0")
+            @Summary("Partition size. 0 = no limit (maxItems only)") int partitionSize,
             @Expression(ExpressionSupport.SUPPORTED) @Optional(defaultValue = "MB")
             @Summary("Size unit: KB, MB, or GB") SizeUnit sizeUnit,
             @Expression(ExpressionSupport.SUPPORTED) @Optional(defaultValue = "0")
@@ -98,6 +98,11 @@ public class DataPartitionOperations {
             @Summary("Include header row in each partition") boolean includeHeader) {
 
         final long partitionSizeBytes = sizeUnit.toBytes(partitionSize);
+
+        if (partitionSize <= 0 && maxItems <= 0) {
+            throw new ModuleException(DataPartitionErrors.INVALID_PARAMETER,
+                new IllegalArgumentException("Either partitionSize or maxItems must be greater than 0"));
+        }
 
         return new PagingProvider<DataPartitionConnection, InputStream>() {
             private BufferedReader reader;
@@ -165,8 +170,8 @@ public class DataPartitionOperations {
                     while ((line = reader.readLine()) != null) {
                         byte[] lineBytes = (line + "\n").getBytes(StandardCharsets.UTF_8);
 
-                        // Check size limit
-                        if (bytesWritten + lineBytes.length > partitionSizeBytes && bytesWritten > 0) {
+                        // Check size limit (skip if partitionSize=0)
+                        if (partitionSizeBytes > 0 && bytesWritten + lineBytes.length > partitionSizeBytes && bytesWritten > 0) {
                             pendingLine = line;
                             break;
                         }
@@ -250,14 +255,19 @@ public class DataPartitionOperations {
     public PagingProvider<DataPartitionConnection, InputStream> partitionJson(
             @Config DataPartitionConfiguration configuration,
             @Expression(ExpressionSupport.SUPPORTED) @Optional(defaultValue = PAYLOAD) InputStream input,
-            @Expression(ExpressionSupport.SUPPORTED) @Optional(defaultValue = "50")
-            @Summary("Partition size") int partitionSize,
+            @Expression(ExpressionSupport.SUPPORTED) @Optional(defaultValue = "0")
+            @Summary("Partition size. 0 = no limit (maxItems only)") int partitionSize,
             @Expression(ExpressionSupport.SUPPORTED) @Optional(defaultValue = "MB")
             @Summary("Size unit: KB, MB, or GB") SizeUnit sizeUnit,
             @Expression(ExpressionSupport.SUPPORTED) @Optional(defaultValue = "0")
             @Summary("Max items (objects) per partition. 0 = no limit (size only)") int maxItems) {
 
         final long partitionSizeBytes = sizeUnit.toBytes(partitionSize);
+
+        if (partitionSize <= 0 && maxItems <= 0) {
+            throw new ModuleException(DataPartitionErrors.INVALID_PARAMETER,
+                new IllegalArgumentException("Either partitionSize or maxItems must be greater than 0"));
+        }
 
         return new PagingProvider<DataPartitionConnection, InputStream>() {
             private JsonParser parser;
@@ -330,9 +340,9 @@ public class DataPartitionOperations {
                         String objStr = node.toString();
                         byte[] objBytes = objStr.getBytes(StandardCharsets.UTF_8);
 
-                        // Check size limit
+                        // Check size limit (skip if partitionSize=0)
                         long additionalBytes = (first ? 0 : 1) + objBytes.length;
-                        if (!first && bytesWritten + additionalBytes > partitionSizeBytes) {
+                        if (partitionSizeBytes > 0 && !first && bytesWritten + additionalBytes > partitionSizeBytes) {
                             pendingObject = objStr;
                             break;
                         }
