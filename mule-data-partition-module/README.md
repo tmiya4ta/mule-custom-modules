@@ -13,7 +13,7 @@ When processing large datasets in MuleSoft, loading the entire file into memory 
 - Partition CSV files by size (KB/MB/GB) and/or item count, with automatic header propagation
 - Partition JSON arrays by size and/or item count, producing valid JSON arrays per partition
 - Count lines in CSV or items in JSON arrays without loading data into memory
-- Tested: 1GB CSV and 1GB JSON on 0.1 vCore (480MB heap) without OOM
+- Tested: 4GB CSV via SFTP on CloudHub 2.0 (0.1 vCore) without OOM
 
 ## How It Works
 
@@ -199,6 +199,35 @@ CloudHub 2.0 imposes a **1GB limit** on HTTP request bodies. For files larger th
 ### Disk Space
 
 Each partition is written to a temp file. Peak disk usage is approximately `2 x partitionSize` (one partition being written, one being read by the consumer). Temp files are automatically cleaned up via `DeleteOnCloseInputStream` and the `PagingProvider.close()` callback.
+
+## Benchmarks
+
+### CloudHub 2.0 (0.1 vCores) — SFTP source
+
+CSV files read from an external SFTP server (theorems.io:2222) via Mule SFTP Connector, partitioned asynchronously on CloudHub 2.0 Private Space with 0.1 vCores.
+
+| File Size | Rows | Partition Size | Partitions | Time | Throughput |
+|-----------|------|---------------|------------|------|------------|
+| 10MB | 100K | 1MB | 11 | 3.2s | 3.1 MB/s |
+| 2.1GB | 20M | 50MB | 42 | 203s | 10.6 MB/s |
+| 4.1GB | 40M | 150MB | 28 | 400s | 10.5 MB/s |
+| 919MB JSON | 5M items | 50MB | 19 | ~100s | ~9 MB/s |
+
+**Notes:**
+- Throughput is limited by SFTP network transfer (CH2 ↔ on-prem), not CPU or memory
+- Processing scales linearly with file size
+- No OOM errors — constant ~20KB memory usage regardless of file size
+- CloudHub 2.0's 30-second HTTP timeout requires async processing for files > 10MB via SFTP
+
+### On-premises Mule Runtime — local SFTP
+
+Same CSV files read from localhost SFTP (mule-sshd-connector on port 2222).
+
+| File Size | Rows | Partition Size | Partitions | Time |
+|-----------|------|---------------|------------|------|
+| 100KB | 1K | 10KB | 11 | 62ms |
+| 10MB | 100K | 1MB | 11 | 195ms |
+| 2.1GB | 20M | 50MB | 42 | 21s |
 
 ## Build
 
