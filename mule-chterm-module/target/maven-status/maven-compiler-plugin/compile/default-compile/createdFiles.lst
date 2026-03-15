@@ -1,6 +1,0 @@
-org/mule/extension/chterm/internal/ChtermOperations.class
-org/mule/extension/chterm/internal/ChtermConfiguration.class
-org/mule/extension/chterm/internal/ChtermExtension.class
-org/mule/extension/chterm/internal/TerminalSession.class
-org/mule/extension/chterm/internal/TerminalSession$UploadSession.class
-org/mule/extension/chterm/internal/TerminalSession$DownloadSession.class
