@@ -13,7 +13,7 @@ When processing large datasets in MuleSoft, loading the entire file into memory 
 - Partition CSV files by size (KB/MB/GB) and/or item count, with automatic header propagation
 - Partition JSON arrays by size and/or item count, producing valid JSON arrays per partition
 - Count lines in CSV or items in JSON arrays without loading data into memory
-- Tested: 1GB CSV and 1GB JSON on 0.1 vCore (256MB heap) without OOM
+- Tested: 1GB CSV and 1GB JSON on 0.1 vCore (~486MB heap) without OOM
 
 ## How It Works
 
