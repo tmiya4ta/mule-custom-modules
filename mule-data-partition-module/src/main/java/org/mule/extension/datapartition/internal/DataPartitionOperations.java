@@ -42,6 +42,14 @@ public class DataPartitionOperations {
 
     private static final Logger logger = LoggerFactory.getLogger(DataPartitionOperations.class);
 
+    private static int safeAvailable(InputStream is) {
+        try { return is.available(); } catch (Exception e) { return -2; }
+    }
+
+    private static boolean safeReady(java.io.BufferedReader r) {
+        try { return r.ready(); } catch (Exception e) { return false; }
+    }
+
     /**
      * InputStream that deletes the backing temp file when closed.
      */
@@ -190,7 +198,7 @@ public class DataPartitionOperations {
                     }
 
                     logger.debug("CSV partition {} written: {} bytes to {}", partitionIndex - 1, bytesWritten, tempFile);
-                    InputStream fis = new DeleteOnCloseInputStream(Files.newInputStream(tempFile), tempFile);
+                    InputStream fis = Files.newInputStream(tempFile);
                     return Collections.singletonList(fis);
 
                 } catch (IOException e) {
@@ -359,7 +367,7 @@ public class DataPartitionOperations {
                     }
 
                     logger.debug("JSON partition {} written: {} bytes to {}", partitionIndex - 1, bytesWritten, tempFile);
-                    InputStream fis = new DeleteOnCloseInputStream(Files.newInputStream(tempFile), tempFile);
+                    InputStream fis = Files.newInputStream(tempFile);
                     return Collections.singletonList(fis);
 
                 } catch (IOException e) {

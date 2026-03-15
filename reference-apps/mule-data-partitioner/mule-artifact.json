@@ -1,5 +1,8 @@
 {
+  "configs": ["data-partition.xml"],
+  "name": "mule-data-partitioner",
   "minMuleVersion": "4.6.0",
   "javaSpecificationVersions": ["17"],
-  "classLoaderModelLoaderDescriptor": {"attributes": {"exportedResources": []}, "id": "mule"}
+  "classLoaderModelLoaderDescriptor": {"attributes": {"exportedResources": []}, "id": "mule"},
+  "secureProperties": ["sftp.password"]
 }

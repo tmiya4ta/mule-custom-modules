@@ -2,17 +2,29 @@
 <mule xmlns="http://www.mulesoft.org/schema/mule/core"
       xmlns:http="http://www.mulesoft.org/schema/mule/http"
       xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+      xmlns:sftp="http://www.mulesoft.org/schema/mule/sftp"
       xmlns:datapartition="http://www.mulesoft.org/schema/mule/datapartition"
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xsi:schemaLocation="
         http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
         http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+        http://www.mulesoft.org/schema/mule/sftp http://www.mulesoft.org/schema/mule/sftp/current/mule-sftp.xsd
         http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
         http://www.mulesoft.org/schema/mule/datapartition http://www.mulesoft.org/schema/mule/datapartition/current/mule-datapartition.xsd">
 
+    <global-property name="mule.env" value="local" />
+    <configuration-properties file="config/config-${mule.env}.yaml" />
+
     <http:listener-config name="HTTP_Listener_config">
-        <http:listener-connection host="0.0.0.0" port="8081" />
+        <http:listener-connection host="0.0.0.0" port="${http.port}" />
     </http:listener-config>
+
+    <sftp:config name="SFTP_Config">
+        <sftp:connection host="${sftp.host}" port="${sftp.port}"
+                         username="${sftp.username}" password="${sftp.password}"
+                         connectionTimeout="30" connectionTimeoutUnit="SECONDS"
+                         workingDir="${sftp.workingDir}" />
+    </sftp:config>
 
     <datapartition:config name="DataPartition_Config" />
 
@@ -121,6 +133,161 @@ output application/json
 {totalPartitions: sizeOf(vars.results), partitionSize: vars.partitionSize ++ vars.sizeUnit, elapsedMs: (now() - vars.startTime) as Number {unit: "milliseconds"}, partitions: vars.results}]]></ee:set-payload>
             </ee:message>
         </ee:transform>
+    </flow>
+
+    <!-- SFTP read debug flow -->
+    <flow name="test-sftp-read-flow">
+        <http:listener config-ref="HTTP_Listener_config" path="/test/sftp-read" />
+        <set-variable variableName="filePath" value="#[attributes.queryParams.path default 'test.csv']" />
+        <sftp:read config-ref="SFTP_Config" path="#[vars.filePath]" />
+        <datapartition:count-lines config-ref="DataPartition_Config" />
+        <ee:transform>
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+    file: vars.filePath,
+    bytes: payload.bytes,
+    lines: payload.lines
+}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+        <error-handler>
+            <on-error-continue>
+                <ee:transform>
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{status: "error", errorType: error.errorType.identifier, message: error.description}]]></ee:set-payload>
+                    </ee:message>
+                </ee:transform>
+            </on-error-continue>
+        </error-handler>
+    </flow>
+
+    <!-- SFTP read → CSV partition flow -->
+    <flow name="test-sftp-csv-partition-flow">
+        <http:listener config-ref="HTTP_Listener_config" path="/test/sftp-csv">
+            <http:response statusCode="202">
+                <http:headers><![CDATA[#[{'Content-Type': 'application/json'}]]]></http:headers>
+            </http:response>
+        </http:listener>
+        <set-variable variableName="filePath" value="#[attributes.queryParams.path default 'test.csv']" />
+        <set-variable variableName="partitionSize" value="#[attributes.queryParams.partitionSize default '50']" />
+        <set-variable variableName="sizeUnit" value="#[attributes.queryParams.sizeUnit default 'MB']" />
+        <async>
+            <set-variable variableName="startTime" value="#[now()]" />
+            <sftp:read config-ref="SFTP_Config" path="#[vars.filePath]">
+                <non-repeatable-stream />
+            </sftp:read>
+            <datapartition:partition-csv config-ref="DataPartition_Config"
+                                          partitionSize="#[vars.partitionSize as Number]"
+                                          sizeUnit="#[vars.sizeUnit]"
+                                          includeHeader="true">
+                <non-repeatable-iterable />
+            </datapartition:partition-csv>
+            <set-variable variableName="partitionCount" value="#[0]" />
+            <set-variable variableName="totalBytes" value="#[0]" />
+            <set-variable variableName="totalLines" value="#[0]" />
+            <foreach>
+                <datapartition:count-lines config-ref="DataPartition_Config" />
+                <set-variable variableName="partitionCount" value="#[vars.partitionCount + 1]" />
+                <set-variable variableName="totalBytes" value="#[vars.totalBytes + payload.bytes]" />
+                <set-variable variableName="totalLines" value="#[vars.totalLines + payload.lines]" />
+                <logger level="INFO" message="#['  partition ' ++ vars.partitionCount ++ ': bytes=' ++ payload.bytes ++ ' lines=' ++ payload.lines]" />
+            </foreach>
+            <logger level="INFO" message="#['SFTP CSV partition complete: file=' ++ vars.filePath ++ ' partitions=' ++ vars.partitionCount ++ ' totalBytes=' ++ vars.totalBytes ++ ' totalLines=' ++ vars.totalLines ++ ' elapsed=' ++ ((now() - vars.startTime) as Number {unit: &quot;milliseconds&quot;}) ++ 'ms']" />
+        </async>
+        <ee:transform>
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+    status: "accepted",
+    message: "Partition job started in background",
+    source: "sftp://" ++ "${sftp.host}" ++ ":" ++ "${sftp.port}" ++ "/" ++ vars.filePath,
+    partitionSize: vars.partitionSize ++ vars.sizeUnit
+}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+        <error-handler>
+            <on-error-continue>
+                <ee:transform>
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+    status: "error",
+    errorType: error.errorType.identifier,
+    message: error.description
+}]]></ee:set-payload>
+                    </ee:message>
+                </ee:transform>
+            </on-error-continue>
+        </error-handler>
+    </flow>
+
+    <!-- SFTP read JSON partition flow (async) -->
+    <flow name="test-sftp-json-partition-flow">
+        <http:listener config-ref="HTTP_Listener_config" path="/test/sftp-json">
+            <http:response statusCode="202">
+                <http:headers><![CDATA[#[{'Content-Type': 'application/json'}]]]></http:headers>
+            </http:response>
+        </http:listener>
+        <set-variable variableName="filePath" value="#[attributes.queryParams.path default 'test.json']" />
+        <set-variable variableName="partitionSize" value="#[attributes.queryParams.partitionSize default '50']" />
+        <set-variable variableName="sizeUnit" value="#[attributes.queryParams.sizeUnit default 'MB']" />
+        <async>
+            <set-variable variableName="startTime" value="#[now()]" />
+            <sftp:read config-ref="SFTP_Config" path="#[vars.filePath]">
+                <non-repeatable-stream />
+            </sftp:read>
+            <datapartition:partition-json config-ref="DataPartition_Config"
+                                           partitionSize="#[vars.partitionSize as Number]"
+                                           sizeUnit="#[vars.sizeUnit]">
+                <non-repeatable-iterable />
+            </datapartition:partition-json>
+            <set-variable variableName="partitionCount" value="#[0]" />
+            <set-variable variableName="totalBytes" value="#[0]" />
+            <set-variable variableName="totalItems" value="#[0]" />
+            <foreach>
+                <datapartition:count-json-items config-ref="DataPartition_Config" />
+                <set-variable variableName="partitionCount" value="#[vars.partitionCount + 1]" />
+                <set-variable variableName="totalBytes" value="#[vars.totalBytes + payload.bytes]" />
+                <set-variable variableName="totalItems" value="#[vars.totalItems + payload.items]" />
+                <logger level="INFO" message="#['  json partition ' ++ vars.partitionCount ++ ': bytes=' ++ payload.bytes ++ ' items=' ++ payload.items]" />
+            </foreach>
+            <logger level="INFO" message="#['SFTP JSON partition complete: file=' ++ vars.filePath ++ ' partitions=' ++ vars.partitionCount ++ ' totalBytes=' ++ vars.totalBytes ++ ' totalItems=' ++ vars.totalItems ++ ' elapsed=' ++ ((now() - vars.startTime) as Number {unit: &quot;milliseconds&quot;}) ++ 'ms']" />
+        </async>
+        <ee:transform>
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+    status: "accepted",
+    message: "JSON partition job started in background",
+    source: "sftp://" ++ "${sftp.host}" ++ ":" ++ "${sftp.port}" ++ "/" ++ vars.filePath,
+    partitionSize: vars.partitionSize ++ vars.sizeUnit
+}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+        <error-handler>
+            <on-error-continue>
+                <ee:transform>
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{status: "error", errorType: error.errorType.identifier, message: error.description}]]></ee:set-payload>
+                    </ee:message>
+                </ee:transform>
+            </on-error-continue>
+        </error-handler>
     </flow>
 
     <flow name="test-json-stream-flow">

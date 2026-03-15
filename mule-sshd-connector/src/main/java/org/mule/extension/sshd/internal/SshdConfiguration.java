@@ -12,6 +12,11 @@ import org.mule.runtime.extension.api.annotation.param.display.Summary;
 import org.mule.runtime.extension.api.annotation.param.display.Password;
 
 import org.apache.sshd.server.SshServer;
+import org.apache.sshd.server.command.Command;
+import org.apache.sshd.server.command.CommandDirectStreamsAware;
+import org.apache.sshd.server.channel.ChannelSession;
+import org.apache.sshd.server.Environment;
+import org.apache.sshd.server.ExitCallback;
 import org.apache.sshd.server.keyprovider.SimpleGeneratorHostKeyProvider;
 import org.apache.sshd.sftp.server.SftpSubsystemFactory;
 
@@ -19,6 +24,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -86,6 +94,42 @@ public class SshdConfiguration implements Initialisable, Disposable {
             org.apache.sshd.common.file.virtualfs.VirtualFileSystemFactory fsFactory =
                 new org.apache.sshd.common.file.virtualfs.VirtualFileSystemFactory(rootPath);
             sshServer.setFileSystemFactory(fsFactory);
+
+            // Command factory for exec channel (pwd, etc.)
+            // Mule SFTP connector uses 'pwd' to resolve home directory
+            sshServer.setCommandFactory((channelSession, command) -> new Command() {
+                private OutputStream out;
+                private OutputStream err;
+                private ExitCallback exitCallback;
+
+                @Override
+                public void setInputStream(InputStream in) {}
+
+                @Override
+                public void setOutputStream(OutputStream out) { this.out = out; }
+
+                @Override
+                public void setErrorStream(OutputStream err) { this.err = err; }
+
+                @Override
+                public void setExitCallback(ExitCallback callback) { this.exitCallback = callback; }
+
+                @Override
+                public void start(ChannelSession channel, Environment env) throws IOException {
+                    String response;
+                    if ("pwd".equalsIgnoreCase(command.trim())) {
+                        response = "/\n";
+                    } else {
+                        response = "Unknown command: " + command + "\n";
+                    }
+                    out.write(response.getBytes(StandardCharsets.UTF_8));
+                    out.flush();
+                    exitCallback.onExit(0);
+                }
+
+                @Override
+                public void destroy(ChannelSession channel) {}
+            });
 
             sshServer.start();
             logger.info("SSHD SFTP server started on port {} with root directory: {}", port, rootPath);

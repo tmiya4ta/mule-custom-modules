@@ -1,0 +1,9 @@
+http:
+  port: "8081"
+
+sftp:
+  host: "theorems.io"
+  port: "2222"
+  username: "sftpuser"
+  password: "sftppass"
+  workingDir: "/"

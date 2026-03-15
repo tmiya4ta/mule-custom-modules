@@ -1,0 +1,9 @@
+http:
+  port: "8092"
+
+sftp:
+  host: "localhost"
+  port: "2222"
+  username: "sftpuser"
+  password: "sftppass"
+  workingDir: "/"

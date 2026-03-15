@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.mycompany</groupId>
 	<artifactId>mule-data-partitioner</artifactId>
-	<version>1.0.0</version>
+	<version>1.0.27</version>
 	<packaging>mule-application</packaging>
 	<name>mule-data-partitioner</name>
 
@@ -48,6 +48,12 @@
 			<groupId>com.demo-group</groupId>
 			<artifactId>mule-data-partition-module</artifactId>
 			<version>0.1.0</version>
+			<classifier>mule-plugin</classifier>
+		</dependency>
+		<dependency>
+			<groupId>org.mule.connectors</groupId>
+			<artifactId>mule-sftp-connector</artifactId>
+			<version>2.6.4</version>
 			<classifier>mule-plugin</classifier>
 		</dependency>
 	</dependencies>
