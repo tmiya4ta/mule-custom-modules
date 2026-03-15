@@ -1,0 +1,12 @@
+org/mule/extension/datapartition/internal/DataPartitionErrorProvider.class
+org/mule/extension/datapartition/internal/DataPartitionConnection.class
+org/mule/extension/datapartition/internal/DataPartitionOperations.class
+org/mule/extension/datapartition/internal/SizeUnit.class
+org/mule/extension/datapartition/internal/DataPartitionConnectionProvider.class
+org/mule/extension/datapartition/internal/DataPartitionConfiguration.class
+org/mule/extension/datapartition/internal/DataPartitionExtension.class
+org/mule/extension/datapartition/internal/DataPartitionOperations$DeleteOnCloseInputStream.class
+org/mule/extension/datapartition/internal/DataPartitionOperations$1.class
+org/mule/extension/datapartition/internal/StreamUtils.class
+org/mule/extension/datapartition/internal/DataPartitionOperations$2.class
+org/mule/extension/datapartition/internal/DataPartitionErrors.class
