@@ -68,12 +68,12 @@ Mule アプリケーション用ブラウザベースターミナルコンソー
 
 日本語の全角・半角文字変換モジュール。
 
-## テストアプリケーション
+## リファレンスアプリケーション
 
 | アプリ | 説明 |
 |--------|------|
-| `mule-data-partition-app` | data-partition モジュールのテストエンドポイント (`/test/csv`, `/test/json`, `/test/csv-stream`, `/test/json-stream`) |
-| `mule-term-app` | chterm モジュールを使ったターミナルコンソールアプリ |
+| `mule-data-partition-app` | data-partition モジュールのリファレンスアプリ (`/test/csv`, `/test/json`, `/test/csv-stream`, `/test/json-stream`) |
+| `mule-term-app` | chterm モジュールのリファレンスアプリ — ブラウザターミナルコンソール |
 
 ## ビルド
 

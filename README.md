@@ -68,12 +68,12 @@ File-based CSV splitter. Splits large CSV files by line count and concatenates t
 
 Japanese full-width / half-width character converter.
 
-## Test Applications
+## Reference Applications
 
 | App | Description |
 |-----|-------------|
-| `mule-data-partition-app` | Test endpoints for data-partition module (`/test/csv`, `/test/json`, `/test/csv-stream`, `/test/json-stream`) |
-| `mule-term-app` | Terminal console app using chterm module |
+| `mule-data-partition-app` | Reference app for data-partition module (`/test/csv`, `/test/json`, `/test/csv-stream`, `/test/json-stream`) |
+| `mule-term-app` | Reference app for chterm module — browser terminal console |
 
 ## Build
 
