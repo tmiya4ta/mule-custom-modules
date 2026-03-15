@@ -2,10 +2,10 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.mycompany</groupId>
-	<artifactId>mule-xterm</artifactId>
+	<artifactId>mule-webterm</artifactId>
 	<version>1.0.0</version>
 	<packaging>mule-application</packaging>
-	<name>mule-xterm</name>
+	<name>mule-webterm</name>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -46,8 +46,8 @@
 		</dependency>
 		<dependency>
 			<groupId>com.demo-group</groupId>
-			<artifactId>mule-chterm-module</artifactId>
-			<version>0.1.3</version>
+			<artifactId>mule-webterm-module</artifactId>
+			<version>0.1.0</version>
 			<classifier>mule-plugin</classifier>
 		</dependency>
 	</dependencies>

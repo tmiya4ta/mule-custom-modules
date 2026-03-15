@@ -9,7 +9,7 @@ Custom modules and extensions for MuleSoft Mule 4.
 | Module | Description |
 |--------|-------------|
 | **mule-data-partition-module** | Streaming CSV/JSON partitioner — splits large InputStream by size or item count without OOM. Temp-file backed, ~20KB memory usage |
-| **mule-chterm-module** | Browser-based terminal console (xterm.js) — interactive shell, file upload/download, right-click menu. Password-protected |
+| **mule-webterm-module** | Browser-based terminal console (xterm.js) — interactive shell, file upload/download, right-click menu. Password-protected |
 | **mule-jmx-module** | JVM metrics collector via JMX — CPU, memory, GC, threads, runtime info in one JSON call |
 | **mule-csv-file-split-module** | File-based CSV splitter — splits by line count, concatenates with zero-copy FileChannel |
 | **mule-jp-characters-module** | Japanese half-width / full-width character converter (hankaku ↔ zenkaku) |
@@ -41,7 +41,7 @@ Streaming data partitioner for CSV and JSON. Splits large InputStreams into size
 </foreach>
 ```
 
-### mule-chterm-module
+### mule-webterm-module
 
 Browser-based terminal console for Mule applications. Provides a web UI with xterm.js for interactive shell access to the Mule runtime container.
 
@@ -104,7 +104,7 @@ Japanese full-width / half-width character converter.
 | App | Description |
 |-----|-------------|
 | `mule-data-partitioner` | Reference app for data-partition module (`/test/csv`, `/test/json`, `/test/csv-stream`, `/test/json-stream`) |
-| `mule-xterm` | Reference app for chterm module — browser terminal console |
+| `mule-webterm` | Reference app for chterm module — browser terminal console |
 | `mule-jmx-metrics` | Reference app for JMX module (`/metrics`, `/metrics/cpu`, `/metrics/memory`, `/metrics/gc`, `/metrics/threads`) |
 
 ## Build

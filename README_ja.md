@@ -9,7 +9,7 @@ MuleSoft Mule 4 用カスタムモジュール・エクステンション集。
 | モジュール | 説明 |
 |-----------|------|
 | **mule-data-partition-module** | CSV/JSON ストリーミングパーティショナー — 巨大 InputStream をサイズ/アイテム数で分割。temp file ベース、メモリ ~20KB |
-| **mule-chterm-module** | ブラウザターミナルコンソール (xterm.js) — インタラクティブシェル、ファイル転送、右クリックメニュー。パスワード保護 |
+| **mule-webterm-module** | ブラウザターミナルコンソール (xterm.js) — インタラクティブシェル、ファイル転送、右クリックメニュー。パスワード保護 |
 | **mule-jmx-module** | JMX 経由の JVM メトリクス収集 — CPU、メモリ、GC、スレッド、ランタイム情報を JSON で一括取得 |
 | **mule-csv-file-split-module** | ファイルベース CSV 分割 — 行数で分割、ゼロコピー FileChannel で結合 |
 | **mule-jp-characters-module** | 日本語 半角↔全角 文字変換 (カタカナ、ASCII、数字、スペース) |
@@ -41,7 +41,7 @@ CSV・JSON のストリーミングデータパーティショナー。巨大な
 </foreach>
 ```
 
-### mule-chterm-module
+### mule-webterm-module
 
 Mule アプリケーション用ブラウザベースターミナルコンソール。xterm.js による Web UI でランタイムコンテナへのインタラクティブシェルアクセスを提供します。
 
@@ -104,7 +104,7 @@ JMX 経由の JVM メトリクス収集モジュール。CPU、メモリ、GC、
 | アプリ | 説明 |
 |--------|------|
 | `mule-data-partitioner` | data-partition モジュールのリファレンスアプリ (`/test/csv`, `/test/json`, `/test/csv-stream`, `/test/json-stream`) |
-| `mule-xterm` | chterm モジュールのリファレンスアプリ — ブラウザターミナルコンソール |
+| `mule-webterm` | chterm モジュールのリファレンスアプリ — ブラウザターミナルコンソール |
 | `mule-jmx-metrics` | JMX モジュールのリファレンスアプリ (`/metrics`, `/metrics/cpu`, `/metrics/memory`, `/metrics/gc`, `/metrics/threads`) |
 
 ## ビルド
