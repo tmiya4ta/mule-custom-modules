@@ -23,7 +23,7 @@
                 <ee:set-payload><![CDATA[%dw 2.0
 output application/json
 ---
-{status: "UP", app: "mule-term-app"}]]></ee:set-payload>
+{status: "UP", app: "mule-xterm"}]]></ee:set-payload>
             </ee:message>
         </ee:transform>
     </flow>

@@ -72,8 +72,8 @@ Japanese full-width / half-width character converter.
 
 | App | Description |
 |-----|-------------|
-| `mule-data-partition-app` | Reference app for data-partition module (`/test/csv`, `/test/json`, `/test/csv-stream`, `/test/json-stream`) |
-| `mule-term-app` | Reference app for chterm module — browser terminal console |
+| `mule-data-partitioner` | Reference app for data-partition module (`/test/csv`, `/test/json`, `/test/csv-stream`, `/test/json-stream`) |
+| `mule-xterm` | Reference app for chterm module — browser terminal console |
 
 ## Build
 
@@ -85,7 +85,7 @@ cd mule-data-partition-module
 JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64 mvn clean install -DskipTests
 
 # Build a test app
-cd mule-data-partition-app
+cd mule-data-partitioner
 JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64 mvn clean package -DskipTests -DattachMuleSources
 ```
 

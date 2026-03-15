@@ -72,8 +72,8 @@ Mule アプリケーション用ブラウザベースターミナルコンソー
 
 | アプリ | 説明 |
 |--------|------|
-| `mule-data-partition-app` | data-partition モジュールのリファレンスアプリ (`/test/csv`, `/test/json`, `/test/csv-stream`, `/test/json-stream`) |
-| `mule-term-app` | chterm モジュールのリファレンスアプリ — ブラウザターミナルコンソール |
+| `mule-data-partitioner` | data-partition モジュールのリファレンスアプリ (`/test/csv`, `/test/json`, `/test/csv-stream`, `/test/json-stream`) |
+| `mule-xterm` | chterm モジュールのリファレンスアプリ — ブラウザターミナルコンソール |
 
 ## ビルド
 
@@ -85,7 +85,7 @@ cd mule-data-partition-module
 JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64 mvn clean install -DskipTests
 
 # テストアプリのビルド
-cd mule-data-partition-app
+cd mule-data-partitioner
 JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64 mvn clean package -DskipTests -DattachMuleSources
 ```
 
