@@ -16,9 +16,9 @@ MuleSoft Mule 4 用カスタムモジュール・エクステンション集。
 
 ## モジュール
 
-### mule-data-partition-module
+### [mule-data-partition-module](mule-data-partition-module/)
 
-CSV・JSON のストリーミングデータパーティショナー。巨大な InputStream をサイズ（および/またはアイテム数）ベースでパーティション分割します。データ全体をメモリに載せません。
+CSV・JSON のストリーミングデータパーティショナー。([詳細ドキュメント](mule-data-partition-module/README_ja.md))巨大な InputStream をサイズ（および/またはアイテム数）ベースでパーティション分割します。データ全体をメモリに載せません。
 
 > リファレンスアプリ: [reference-apps/mule-data-partitioner](reference-apps/mule-data-partitioner/) — エンドポイント: `/test/csv`, `/test/json`, `/test/csv-stream`, `/test/json-stream`
 
@@ -68,9 +68,9 @@ Mule アプリケーション用ブラウザベースターミナルコンソー
 </flow>
 ```
 
-### mule-jmx-module
+### [mule-jmx-module](mule-jmx-module/)
 
-JMX 経由の JVM メトリクス収集モジュール。CPU、メモリ、GC、スレッド、クラスローディング、ランタイム、バッファプールのメトリクスを取得します。
+JMX 経由の JVM メトリクス収集モジュール。([詳細ドキュメント](mule-jmx-module/README_ja.md))CPU、メモリ、GC、スレッド、クラスローディング、ランタイム、バッファプールのメトリクスを取得します。
 
 > リファレンスアプリ: [reference-apps/mule-jmx-metrics](reference-apps/mule-jmx-metrics/) — エンドポイント: `/metrics`, `/metrics/cpu`, `/metrics/memory`, `/metrics/gc`, `/metrics/threads`
 

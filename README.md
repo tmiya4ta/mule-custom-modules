@@ -16,9 +16,9 @@ Custom modules and extensions for MuleSoft Mule 4.
 
 ## Modules
 
-### mule-data-partition-module
+### [mule-data-partition-module](mule-data-partition-module/)
 
-Streaming data partitioner for CSV and JSON. Splits large InputStreams into size-based (and/or item-count-based) partitions without loading entire data into memory.
+Streaming data partitioner for CSV and JSON. ([detailed docs](mule-data-partition-module/README.md)) Splits large InputStreams into size-based (and/or item-count-based) partitions without loading entire data into memory.
 
 > Reference app: [reference-apps/mule-data-partitioner](reference-apps/mule-data-partitioner/) — endpoints: `/test/csv`, `/test/json`, `/test/csv-stream`, `/test/json-stream`
 
@@ -68,9 +68,9 @@ Browser-based terminal console for Mule applications. Provides a web UI with xte
 </flow>
 ```
 
-### mule-jmx-module
+### [mule-jmx-module](mule-jmx-module/)
 
-JVM metrics collector via JMX. Collects CPU, memory, GC, threads, class loading, runtime, and buffer pool metrics.
+JVM metrics collector via JMX. ([detailed docs](mule-jmx-module/README.md)) Collects CPU, memory, GC, threads, class loading, runtime, and buffer pool metrics.
 
 > Reference app: [reference-apps/mule-jmx-metrics](reference-apps/mule-jmx-metrics/) — endpoints: `/metrics`, `/metrics/cpu`, `/metrics/memory`, `/metrics/gc`, `/metrics/threads`
 
