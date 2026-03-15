@@ -56,6 +56,27 @@ Mule アプリケーション用ブラウザベースターミナルコンソー
 
 ブラウザで `/chterm/` にアクセスするとターミナルが使えます。
 
+### mule-jmx-module
+
+JMX 経由の JVM メトリクス収集モジュール。CPU、メモリ、GC、スレッド、クラスローディング、ランタイム、バッファプールのメトリクスを取得します。
+
+**オペレーション:**
+- `collect-metrics` — 全メトリクスを一括取得
+- `collect-cpu` — CPU 使用率、プロセス CPU 時間、システムロードアベレージ
+- `collect-memory` — Heap/NonHeap 使用量、メモリプール詳細
+- `collect-gc` — GC 回数・累積時間
+- `collect-threads` — スレッド数、状態別内訳 (RUNNABLE/WAITING/TIMED_WAITING)
+
+**使い方:**
+```xml
+<jmx:config name="JMX_Config" />
+
+<flow name="metrics-flow">
+    <http:listener config-ref="HTTP_Listener_config" path="/metrics" />
+    <jmx:collect-metrics config-ref="JMX_Config" />
+</flow>
+```
+
 ### mule-csv-file-split-module
 
 ファイルベースの CSV 分割モジュール。大きな CSV ファイルを行数で分割し、結合します。
@@ -74,6 +95,7 @@ Mule アプリケーション用ブラウザベースターミナルコンソー
 |--------|------|
 | `mule-data-partitioner` | data-partition モジュールのリファレンスアプリ (`/test/csv`, `/test/json`, `/test/csv-stream`, `/test/json-stream`) |
 | `mule-xterm` | chterm モジュールのリファレンスアプリ — ブラウザターミナルコンソール |
+| `mule-jmx-metrics` | JMX モジュールのリファレンスアプリ (`/metrics`, `/metrics/cpu`, `/metrics/memory`, `/metrics/gc`, `/metrics/threads`) |
 
 ## ビルド
 

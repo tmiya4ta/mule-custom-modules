@@ -56,6 +56,27 @@ Browser-based terminal console for Mule applications. Provides a web UI with xte
 
 Then browse to `/chterm/` to access the terminal.
 
+### mule-jmx-module
+
+JVM metrics collector via JMX. Collects CPU, memory, GC, threads, class loading, runtime, and buffer pool metrics.
+
+**Operations:**
+- `collect-metrics` — All metrics in one call
+- `collect-cpu` — CPU load, process CPU time, system load average
+- `collect-memory` — Heap/non-heap usage, memory pool details
+- `collect-gc` — GC collection count and time
+- `collect-threads` — Thread count, state breakdown (RUNNABLE/WAITING/TIMED_WAITING)
+
+**Usage:**
+```xml
+<jmx:config name="JMX_Config" />
+
+<flow name="metrics-flow">
+    <http:listener config-ref="HTTP_Listener_config" path="/metrics" />
+    <jmx:collect-metrics config-ref="JMX_Config" />
+</flow>
+```
+
 ### mule-csv-file-split-module
 
 File-based CSV splitter. Splits large CSV files by line count and concatenates them back.
@@ -74,6 +95,7 @@ Japanese full-width / half-width character converter.
 |-----|-------------|
 | `mule-data-partitioner` | Reference app for data-partition module (`/test/csv`, `/test/json`, `/test/csv-stream`, `/test/json-stream`) |
 | `mule-xterm` | Reference app for chterm module — browser terminal console |
+| `mule-jmx-metrics` | Reference app for JMX module (`/metrics`, `/metrics/cpu`, `/metrics/memory`, `/metrics/gc`, `/metrics/threads`) |
 
 ## Build
 
