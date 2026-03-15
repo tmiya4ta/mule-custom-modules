@@ -183,7 +183,7 @@ Counts bytes and top-level items in a JSON array using Jackson streaming parser.
 
 ### Use `<non-repeatable-iterable />`
 
-The partition operations return a `PagingProvider`. By default, Mule wraps the iterable in a repeatable (replayable) wrapper, which buffers **all partitions in memory** -- defeating the purpose entirely. Always add `<non-repeatable-iterable />` inside the operation tag.
+The partition operations return a `PagingProvider`. By default, Mule wraps the iterable with `repeatable-file-store-iterable`, which buffers consumed items to disk so they can be replayed. This won't cause OOM, but it does consume disk space proportional to the total data size. Adding `<non-repeatable-iterable />` disables this buffering entirely — consumed partitions are immediately eligible for GC, minimizing both memory and disk usage. Recommended for large data processing where replay is not needed.
 
 ### HTTP Input: Use `<non-repeatable-stream />` and streaming MIME type
 
