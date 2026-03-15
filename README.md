@@ -156,14 +156,30 @@ Once published, add to your app's `pom.xml` using the organization ID as groupId
 
 ## Deploy
 
-```bash
-# Upload app to Exchange
-yaac upload asset target/<app>.jar -g <org> -a <app-name> -v <version>
+### From Anypoint Studio
 
-# Deploy to CloudHub 2.0
-yaac deploy app <org> <env> <app-name> target=<target> \
-  -g <org> -a <app-name> -v <version> v-cores=0.1
+1. Right-click the app project in Package Explorer
+2. Select **Anypoint Platform** > **Deploy to CloudHub 2.0**
+3. Select the target environment and runtime
+4. Click **Deploy**
+
+### From Runtime Manager UI
+
+1. Go to [Anypoint Runtime Manager](https://anypoint.mulesoft.com/cloudhub/)
+2. Click **Deploy Application**
+3. Upload the JAR file (`target/<app>-mule-application.jar`)
+4. Select target, vCores, and runtime version
+5. Click **Deploy Application**
+
+### From Maven CLI
+
+Add `mule-maven-plugin` deploy configuration to `pom.xml`, then:
+
+```bash
+JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64 mvn clean deploy -DmuleDeploy -DskipTests
 ```
+
+> See [MuleSoft documentation](https://docs.mulesoft.com/cloudhub-2/ch2-deploy-maven) for `mule-maven-plugin` configuration.
 
 ## Test
 

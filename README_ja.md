@@ -156,14 +156,30 @@ JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64 mvn clean deploy -DskipTests
 
 ## デプロイ
 
-```bash
-# アプリを Exchange にアップロード
-yaac upload asset target/<app>.jar -g <org> -a <app-name> -v <version>
+### Anypoint Studio から
 
-# CloudHub 2.0 にデプロイ
-yaac deploy app <org> <env> <app-name> target=<target> \
-  -g <org> -a <app-name> -v <version> v-cores=0.1
+1. Package Explorer でアプリプロジェクトを右クリック
+2. **Anypoint Platform** > **Deploy to CloudHub 2.0** を選択
+3. ターゲット環境とランタイムを選択
+4. **Deploy** をクリック
+
+### Runtime Manager UI から
+
+1. [Anypoint Runtime Manager](https://anypoint.mulesoft.com/cloudhub/) にアクセス
+2. **Deploy Application** をクリック
+3. JAR ファイル (`target/<app>-mule-application.jar`) をアップロード
+4. ターゲット、vCores、ランタイムバージョンを選択
+5. **Deploy Application** をクリック
+
+### Maven CLI から
+
+`pom.xml` に `mule-maven-plugin` のデプロイ設定を追加してから:
+
+```bash
+JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64 mvn clean deploy -DmuleDeploy -DskipTests
 ```
+
+> `mule-maven-plugin` の設定は [MuleSoft ドキュメント](https://docs.mulesoft.com/cloudhub-2/ch2-deploy-maven) を参照してください。
 
 ## テスト
 
