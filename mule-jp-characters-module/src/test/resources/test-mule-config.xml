@@ -4,16 +4,14 @@
       xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
           http://www.mulesoft.org/schema/mule/jpcharactersconverter http://www.mulesoft.org/schema/mule/jpcharactersconverter/current/mule-jpcharactersconverter.xsd">
 
-    <jpcharactersconverter:config name="config" configId="configId">
-        <jpcharactersconverter:connection requiredParameter="aValue" />
-    </jpcharactersconverter:config>
+    <jpcharactersconverter:config name="config" />
 
-    <flow name="sayHiFlow">
-        <jpcharactersconverter:say-hi person="Mariano Gonzalez"/>
+    <flow name="hankakuToZenkakuFlow">
+        <jpcharactersconverter:hankaku-to-zenkaku inputText="ABC 123 ｶﾀｶﾅ"/>
     </flow>
 
-    <flow name="retrieveInfoFlow">
-        <jpcharactersconverter:retrieve-info config-ref="config"/>
+    <flow name="zenkakuToHankakuFlow">
+        <jpcharactersconverter:zenkaku-to-hankaku inputText="ＡＢＣ　１２３　カタカナ"/>
     </flow>
 
 </mule>

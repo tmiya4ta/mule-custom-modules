@@ -4,6 +4,16 @@ MuleSoft Mule 4 用カスタムモジュール・エクステンション集。
 
 [English](README.md)
 
+## 概要
+
+| モジュール | 説明 |
+|-----------|------|
+| **mule-data-partition-module** | CSV/JSON ストリーミングパーティショナー — 巨大 InputStream をサイズ/アイテム数で分割。temp file ベース、メモリ ~20KB |
+| **mule-chterm-module** | ブラウザターミナルコンソール (xterm.js) — インタラクティブシェル、ファイル転送、右クリックメニュー。パスワード保護 |
+| **mule-jmx-module** | JMX 経由の JVM メトリクス収集 — CPU、メモリ、GC、スレッド、ランタイム情報を JSON で一括取得 |
+| **mule-csv-file-split-module** | ファイルベース CSV 分割 — 行数で分割、ゼロコピー FileChannel で結合 |
+| **mule-jp-characters-module** | 日本語 半角↔全角 文字変換 (カタカナ、ASCII、数字、スペース) |
+
 ## モジュール
 
 ### mule-data-partition-module

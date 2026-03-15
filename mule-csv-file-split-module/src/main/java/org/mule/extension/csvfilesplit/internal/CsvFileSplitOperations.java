@@ -6,28 +6,17 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.SequenceInputStream;
-import java.lang.reflect.Array;
+import java.nio.channels.FileChannel;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
-import java.nio.file.attribute.FileAttribute;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
 import java.util.StringJoiner;
-import java.util.stream.Stream;
-import java.io.BufferedReader;
-import java.nio.channels.FileChannel;
-import java.util.List;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.extension.api.annotation.param.MediaType;
 import static org.mule.runtime.extension.api.annotation.param.MediaType.ANY;
@@ -128,15 +117,15 @@ public class CsvFileSplitOperations {
 
 	    String remainedContent = sj.toString();
 	    logger.info("Remained length: " + remainedContent.length());
-	    if (1 < remainedContent.length()) {
+	    if (remainedContent.length() > 0) {
 		remainedContent += "\n";
-		outFileName = "s_" + fileSeqNum;
+		outFileName = "s_" + String.format("%05d", fileSeqNum);
 		outPath = fs.getPath(tmpDir, outFileName);
 		Files.write(outPath, remainedContent.getBytes());
 	    }
 
 	} catch (IOException e) {
-	    e.printStackTrace();
+	    logger.error("Error splitting CSV", e);
 	    throw e;
 	}  finally {
 	    if (rdr !=null) {
@@ -154,8 +143,8 @@ public class CsvFileSplitOperations {
 	try {
 	    Path path = Paths.get(pathString);
 	    if (path.toFile().exists()) {
-		Stream<Path> files = Files.list(path);
-		files.forEach(file -> {
+		try (Stream<Path> files = Files.list(path)) {
+		    files.forEach(file -> {
 			try {
 			    if (file.toFile().isDirectory()) {
 				cleanDirRecursively(file.toString());
@@ -163,15 +152,14 @@ public class CsvFileSplitOperations {
 				Files.delete(file);
 			    }
 			} catch (IOException e) {
-			    e.printStackTrace();
-			    logger.warn("Failed to delete " + file.toString());
+			    logger.warn("Failed to delete {}", file, e);
 			}
 		    });
+		}
 	    }
 	    Files.delete(path);
 	} catch (IOException e) {
-	    e.printStackTrace();
-	    logger.warn("Failed to delete " + pathString);
+	    logger.warn("Failed to delete {}", pathString, e);
 	}
     }
 
@@ -258,33 +246,27 @@ public class CsvFileSplitOperations {
 			 @DisplayName("Delete given files") @Optional(defaultValue = "true") @Summary("Delete given files after concatenation") @Expression(ExpressionSupport.SUPPORTED) boolean isDeleteTempFiles) {
 
 	File dstFile = new File(dstFilePath);
-	FileChannel dstChannel = null;
 	try {
 	    Files.deleteIfExists(dstFile.toPath());
-	    dstChannel = FileChannel.open(dstFile.toPath(), StandardOpenOption.CREATE, StandardOpenOption.WRITE, StandardOpenOption.APPEND);
-	    for (String file : files) {
-		File srcFile = new File(file);
-		FileChannel srcChannel = FileChannel.open(srcFile.toPath(), StandardOpenOption.READ);
-		srcChannel.transferTo(0, srcChannel.size(), dstChannel);
-		srcChannel.close();
+	    try (FileChannel dstChannel = FileChannel.open(dstFile.toPath(), StandardOpenOption.CREATE, StandardOpenOption.WRITE, StandardOpenOption.APPEND)) {
+		for (String file : files) {
+		    File srcFile = new File(file);
+		    try (FileChannel srcChannel = FileChannel.open(srcFile.toPath(), StandardOpenOption.READ)) {
+			srcChannel.transferTo(0, srcChannel.size(), dstChannel);
+		    }
+		}
+	    }
+	    if (isDeleteTempFiles) {
+		for (String file : files) {
+		    File srcFile = new File(file);
+		    if (!srcFile.delete()) {
+			logger.warn("Failed to delete temporary file: {}", file);
+		    }
+		}
+		logger.info("Deleted temporary files");
 	    }
 	} catch (IOException e) {
 	    throw new ModuleException(CsvFileSplitErrors.INVALID_PARAMETER, e);
-	} finally {
-	    try {
-		dstChannel.close();
-		    
-		if (isDeleteTempFiles) {
-		    for (String file : files) {
-			File srcFile = new File(file);
-			srcFile.delete();
-		    }
-		    logger.info("Deleted temporary files");
-		}
-		    
-	    } catch (IOException e) {
-		throw new ModuleException(CsvFileSplitErrors.INVALID_PARAMETER, e);
-	    }
 	}
 	return dstFilePath;
     }

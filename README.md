@@ -4,6 +4,16 @@ Custom modules and extensions for MuleSoft Mule 4.
 
 [日本語版はこちら / Japanese](README_ja.md)
 
+## Overview
+
+| Module | Description |
+|--------|-------------|
+| **mule-data-partition-module** | Streaming CSV/JSON partitioner — splits large InputStream by size or item count without OOM. Temp-file backed, ~20KB memory usage |
+| **mule-chterm-module** | Browser-based terminal console (xterm.js) — interactive shell, file upload/download, right-click menu. Password-protected |
+| **mule-jmx-module** | JVM metrics collector via JMX — CPU, memory, GC, threads, runtime info in one JSON call |
+| **mule-csv-file-split-module** | File-based CSV splitter — splits by line count, concatenates with zero-copy FileChannel |
+| **mule-jp-characters-module** | Japanese half-width / full-width character converter (hankaku ↔ zenkaku) |
+
 ## Modules
 
 ### mule-data-partition-module
