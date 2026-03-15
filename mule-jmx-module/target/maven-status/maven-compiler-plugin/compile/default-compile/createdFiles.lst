@@ -1,0 +1,5 @@
+org/mule/extension/jmx/internal/JmxConfiguration.class
+org/mule/extension/jmx/internal/JmxExtension.class
+org/mule/extension/jmx/internal/JmxOperations.class
+org/mule/extension/jmx/internal/JsonUtil.class
+org/mule/extension/jmx/internal/MetricsCollector.class

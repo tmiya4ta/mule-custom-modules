@@ -1,0 +1,19 @@
+{
+  "name": "OAUTH EE service",
+  "minMuleVersion": "4.3.0",
+  "requiredProduct": "MULE_EE",
+  "contracts": [
+    {
+      "serviceProviderClassName": "com.mulesoft.service.oauth.provider.EEOAuthServiceProvider",
+      "contractClassName": "org.mule.runtime.oauth.api.OAuthService"
+    }
+  ],
+  "classLoaderModelLoaderDescriptor": {
+    "id": "mule",
+    "attributes": {}
+  },
+  "bundleDescriptorLoader": {
+    "id": "mule",
+    "attributes": {}
+  }
+}

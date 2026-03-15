@@ -1,0 +1,19 @@
+{
+  "name": "HTTP EE service",
+  "minMuleVersion": "4.3.0",
+  "requiredProduct": "MULE_EE",
+  "contracts": [
+    {
+      "serviceProviderClassName": "com.mulesoft.service.http.impl.provider.EEHttpServiceProvider",
+      "contractClassName": "org.mule.runtime.http.api.HttpService"
+    }
+  ],
+  "classLoaderModelLoaderDescriptor": {
+    "id": "mule",
+    "attributes": {}
+  },
+  "bundleDescriptorLoader": {
+    "id": "mule",
+    "attributes": {}
+  }
+}
