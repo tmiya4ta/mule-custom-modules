@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 26 26">
+  <!-- Server box -->
+  <rect x="2" y="3" width="22" height="20" rx="2.5" fill="#1e293b" stroke="#38bdf8" stroke-width="0.8"/>
+  <!-- Top bar -->
+  <rect x="2" y="3" width="22" height="4.5" rx="2.5" fill="#0f172a"/>
+  <!-- Status LEDs -->
+  <circle cx="5" cy="5.2" r="0.7" fill="#22c55e"/>
+  <circle cx="7.2" cy="5.2" r="0.7" fill="#38bdf8"/>
+  <!-- Lock icon (SSH security) -->
+  <rect x="10" y="11" width="6" height="5" rx="1" fill="#f59e0b"/>
+  <path d="M11.5 11 V9.5 A1.5 1.5 0 0 1 14.5 9.5 V11" fill="none" stroke="#f59e0b" stroke-width="1" stroke-linecap="round"/>
+  <circle cx="13" cy="13.8" r="0.6" fill="#1e293b"/>
+  <!-- Upload arrow -->
+  <path d="M20 18 L20 13 M18 15 L20 13 L22 15" stroke="#22c55e" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  <!-- SFTP label -->
+  <text x="3.5" y="20" font-family="sans-serif" font-weight="bold" font-size="3.2" fill="#94a3b8">SFTP</text>
+</svg>
