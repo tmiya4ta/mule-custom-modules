@@ -124,17 +124,24 @@ JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64 mvn clean package -DskipTests -Datt
 
 モジュールを Anypoint Exchange にパブリッシュすると、他のアプリから Maven 依存として利用できます。
 
+### Anypoint Studio から
+
+1. Package Explorer でモジュールプロジェクトを右クリック
+2. **Anypoint Platform** > **Publish to Exchange** を選択
+3. **Group Id** に組織IDを設定
+4. **Version** を設定して **Finish** をクリック
+
+### Maven CLI から
+
+`pom.xml` の `groupId` を組織IDに設定してから:
+
 ```bash
-# モジュールをパブリッシュ
-yaac upload asset mule-data-partition-module/target/mule-data-partition-module-0.1.0-mule-plugin.jar \
-  -g <org> -a mule-data-partition-module -v 0.1.0
-
-yaac upload asset mule-webterm-module/target/mule-webterm-module-0.1.0-mule-plugin.jar \
-  -g <org> -a mule-webterm-module -v 0.1.0
-
-yaac upload asset mule-jmx-module/target/mule-jmx-module-0.1.0-mule-plugin.jar \
-  -g <org> -a mule-jmx-module -v 0.1.0
+JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64 mvn clean deploy -DskipTests
 ```
+
+> `~/.m2/settings.xml` の `anypoint-exchange-v3` サーバーIDに Exchange の認証情報が必要です。
+
+### モジュールの利用
 
 パブリッシュ後、アプリの `pom.xml` に組織IDを groupId として追加:
 

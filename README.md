@@ -124,17 +124,24 @@ JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64 mvn clean package -DskipTests -Datt
 
 Modules can be published to Anypoint Exchange so other apps can use them as Maven dependencies.
 
+### From Anypoint Studio
+
+1. Right-click the module project in Package Explorer
+2. Select **Anypoint Platform** > **Publish to Exchange**
+3. Set **Group Id** to your organization ID
+4. Set **Version** and click **Finish**
+
+### From Maven CLI
+
+Set the `groupId` in `pom.xml` to your organization ID, then:
+
 ```bash
-# Publish a module
-yaac upload asset mule-data-partition-module/target/mule-data-partition-module-0.1.0-mule-plugin.jar \
-  -g <org> -a mule-data-partition-module -v 0.1.0
-
-yaac upload asset mule-webterm-module/target/mule-webterm-module-0.1.0-mule-plugin.jar \
-  -g <org> -a mule-webterm-module -v 0.1.0
-
-yaac upload asset mule-jmx-module/target/mule-jmx-module-0.1.0-mule-plugin.jar \
-  -g <org> -a mule-jmx-module -v 0.1.0
+JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64 mvn clean deploy -DskipTests
 ```
+
+> Requires Exchange credentials in `~/.m2/settings.xml` under the `anypoint-exchange-v3` server ID.
+
+### Using the module
 
 Once published, add to your app's `pom.xml` using the organization ID as groupId:
 
