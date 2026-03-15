@@ -6,19 +6,21 @@ Custom modules and extensions for MuleSoft Mule 4.
 
 ## Overview
 
-| Module | Description |
-|--------|-------------|
-| **mule-data-partition-module** | Streaming CSV/JSON partitioner — splits large InputStream by size or item count without OOM. Temp-file backed, ~20KB memory usage |
-| **mule-webterm-module** | Browser-based terminal console (xterm.js) — interactive shell, file upload/download, right-click menu. Password-protected |
-| **mule-jmx-module** | JVM metrics collector via JMX — CPU, memory, GC, threads, runtime info in one JSON call |
-| **mule-csv-file-split-module** | File-based CSV splitter — splits by line count, concatenates with zero-copy FileChannel |
-| **mule-jp-characters-module** | Japanese half-width / full-width character converter (hankaku ↔ zenkaku) |
+| Module | Description | Reference App |
+|--------|-------------|---------------|
+| **mule-data-partition-module** | Streaming CSV/JSON partitioner — splits large InputStream by size or item count without OOM | [mule-data-partitioner](reference-apps/mule-data-partitioner/) |
+| **mule-webterm-module** | Browser-based terminal console (xterm.js) — interactive shell, file upload/download, right-click menu | [mule-webterm](reference-apps/mule-webterm/) |
+| **mule-jmx-module** | JVM metrics collector via JMX — CPU, memory, GC, threads, runtime info in one JSON call | [mule-jmx-metrics](reference-apps/mule-jmx-metrics/) |
+| **mule-csv-file-split-module** | File-based CSV splitter — splits by line count, concatenates with zero-copy FileChannel | — |
+| **mule-jp-characters-module** | Japanese half-width / full-width character converter (hankaku ↔ zenkaku) | — |
 
 ## Modules
 
 ### mule-data-partition-module
 
 Streaming data partitioner for CSV and JSON. Splits large InputStreams into size-based (and/or item-count-based) partitions without loading entire data into memory.
+
+> Reference app: [reference-apps/mule-data-partitioner](reference-apps/mule-data-partitioner/) — endpoints: `/test/csv`, `/test/json`, `/test/csv-stream`, `/test/json-stream`
 
 **Key features:**
 - Partition by size (KB/MB/GB) and/or item count
@@ -45,6 +47,8 @@ Streaming data partitioner for CSV and JSON. Splits large InputStreams into size
 
 Browser-based terminal console for Mule applications. Provides a web UI with xterm.js for interactive shell access to the Mule runtime container.
 
+> Reference app: [reference-apps/mule-webterm](reference-apps/mule-webterm/) — browse to `/` or `/chterm/` for the terminal UI
+
 **Key features:**
 - xterm.js terminal with full color and bash keybinding support (Ctrl-A/E/K/U/W/C/D/L/R)
 - Password-protected exec key authentication
@@ -64,11 +68,11 @@ Browser-based terminal console for Mule applications. Provides a web UI with xte
 </flow>
 ```
 
-Then browse to `/chterm/` to access the terminal.
-
 ### mule-jmx-module
 
 JVM metrics collector via JMX. Collects CPU, memory, GC, threads, class loading, runtime, and buffer pool metrics.
+
+> Reference app: [reference-apps/mule-jmx-metrics](reference-apps/mule-jmx-metrics/) — endpoints: `/metrics`, `/metrics/cpu`, `/metrics/memory`, `/metrics/gc`, `/metrics/threads`
 
 **Operations:**
 - `collect-metrics` — All metrics in one call
@@ -99,13 +103,8 @@ File-based CSV splitter. Splits large CSV files by line count and concatenates t
 
 Japanese full-width / half-width character converter.
 
-## Reference Applications
-
-| App | Description |
-|-----|-------------|
-| `mule-data-partitioner` | Reference app for data-partition module (`/test/csv`, `/test/json`, `/test/csv-stream`, `/test/json-stream`) |
-| `mule-webterm` | Reference app for chterm module — browser terminal console |
-| `mule-jmx-metrics` | Reference app for JMX module (`/metrics`, `/metrics/cpu`, `/metrics/memory`, `/metrics/gc`, `/metrics/threads`) |
+- `Hankaku -> Zenkaku` — half-width to full-width (katakana, ASCII, letters, numbers, spaces)
+- `Zenkaku -> Hankaku` — full-width to half-width
 
 ## Build
 
@@ -116,8 +115,8 @@ Requires Java 17 and Maven 3.x.
 cd mule-data-partition-module
 JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64 mvn clean install -DskipTests
 
-# Build a test app
-cd mule-data-partitioner
+# Build a reference app
+cd reference-apps/mule-data-partitioner
 JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64 mvn clean package -DskipTests -DattachMuleSources
 ```
 

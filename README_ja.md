@@ -6,19 +6,21 @@ MuleSoft Mule 4 用カスタムモジュール・エクステンション集。
 
 ## 概要
 
-| モジュール | 説明 |
-|-----------|------|
-| **mule-data-partition-module** | CSV/JSON ストリーミングパーティショナー — 巨大 InputStream をサイズ/アイテム数で分割。temp file ベース、メモリ ~20KB |
-| **mule-webterm-module** | ブラウザターミナルコンソール (xterm.js) — インタラクティブシェル、ファイル転送、右クリックメニュー。パスワード保護 |
-| **mule-jmx-module** | JMX 経由の JVM メトリクス収集 — CPU、メモリ、GC、スレッド、ランタイム情報を JSON で一括取得 |
-| **mule-csv-file-split-module** | ファイルベース CSV 分割 — 行数で分割、ゼロコピー FileChannel で結合 |
-| **mule-jp-characters-module** | 日本語 半角↔全角 文字変換 (カタカナ、ASCII、数字、スペース) |
+| モジュール | 説明 | リファレンスアプリ |
+|-----------|------|-------------------|
+| **mule-data-partition-module** | CSV/JSON ストリーミングパーティショナー — 巨大 InputStream をサイズ/アイテム数で分割。temp file ベース、メモリ ~20KB | [mule-data-partitioner](reference-apps/mule-data-partitioner/) |
+| **mule-webterm-module** | ブラウザターミナルコンソール (xterm.js) — インタラクティブシェル、ファイル転送、右クリックメニュー。パスワード保護 | [mule-webterm](reference-apps/mule-webterm/) |
+| **mule-jmx-module** | JMX 経由の JVM メトリクス収集 — CPU、メモリ、GC、スレッド、ランタイム情報を JSON で一括取得 | [mule-jmx-metrics](reference-apps/mule-jmx-metrics/) |
+| **mule-csv-file-split-module** | ファイルベース CSV 分割 — 行数で分割、ゼロコピー FileChannel で結合 | — |
+| **mule-jp-characters-module** | 日本語 半角↔全角 文字変換 (カタカナ、ASCII、数字、スペース) | — |
 
 ## モジュール
 
 ### mule-data-partition-module
 
 CSV・JSON のストリーミングデータパーティショナー。巨大な InputStream をサイズ（および/またはアイテム数）ベースでパーティション分割します。データ全体をメモリに載せません。
+
+> リファレンスアプリ: [reference-apps/mule-data-partitioner](reference-apps/mule-data-partitioner/) — エンドポイント: `/test/csv`, `/test/json`, `/test/csv-stream`, `/test/json-stream`
 
 **主な機能:**
 - サイズ (KB/MB/GB) および/またはアイテム数での分割
@@ -45,6 +47,8 @@ CSV・JSON のストリーミングデータパーティショナー。巨大な
 
 Mule アプリケーション用ブラウザベースターミナルコンソール。xterm.js による Web UI でランタイムコンテナへのインタラクティブシェルアクセスを提供します。
 
+> リファレンスアプリ: [reference-apps/mule-webterm](reference-apps/mule-webterm/) — `/` または `/chterm/` でターミナル UI にアクセス
+
 **主な機能:**
 - xterm.js ターミナル（フルカラー、bash キーバインド対応: Ctrl-A/E/K/U/W/C/D/L/R）
 - パスワード保護の exec key 認証
@@ -64,11 +68,11 @@ Mule アプリケーション用ブラウザベースターミナルコンソー
 </flow>
 ```
 
-ブラウザで `/chterm/` にアクセスするとターミナルが使えます。
-
 ### mule-jmx-module
 
 JMX 経由の JVM メトリクス収集モジュール。CPU、メモリ、GC、スレッド、クラスローディング、ランタイム、バッファプールのメトリクスを取得します。
+
+> リファレンスアプリ: [reference-apps/mule-jmx-metrics](reference-apps/mule-jmx-metrics/) — エンドポイント: `/metrics`, `/metrics/cpu`, `/metrics/memory`, `/metrics/gc`, `/metrics/threads`
 
 **オペレーション:**
 - `collect-metrics` — 全メトリクスを一括取得
@@ -99,13 +103,8 @@ JMX 経由の JVM メトリクス収集モジュール。CPU、メモリ、GC、
 
 日本語の全角・半角文字変換モジュール。
 
-## リファレンスアプリケーション
-
-| アプリ | 説明 |
-|--------|------|
-| `mule-data-partitioner` | data-partition モジュールのリファレンスアプリ (`/test/csv`, `/test/json`, `/test/csv-stream`, `/test/json-stream`) |
-| `mule-webterm` | chterm モジュールのリファレンスアプリ — ブラウザターミナルコンソール |
-| `mule-jmx-metrics` | JMX モジュールのリファレンスアプリ (`/metrics`, `/metrics/cpu`, `/metrics/memory`, `/metrics/gc`, `/metrics/threads`) |
+- `Hankaku -> Zenkaku` — 半角→全角 (カタカナ、ASCII、数字、スペース)
+- `Zenkaku -> Hankaku` — 全角→半角
 
 ## ビルド
 
@@ -116,8 +115,8 @@ Java 17 と Maven 3.x が必要です。
 cd mule-data-partition-module
 JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64 mvn clean install -DskipTests
 
-# テストアプリのビルド
-cd mule-data-partitioner
+# リファレンスアプリのビルド
+cd reference-apps/mule-data-partitioner
 JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64 mvn clean package -DskipTests -DattachMuleSources
 ```
 
