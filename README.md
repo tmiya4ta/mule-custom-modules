@@ -120,12 +120,50 @@ cd reference-apps/mule-data-partitioner
 JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64 mvn clean package -DskipTests -DattachMuleSources
 ```
 
+## Publish to Exchange
+
+Modules can be published to Anypoint Exchange so other apps can use them as Maven dependencies.
+
+```bash
+# Publish a module
+yaac upload asset mule-data-partition-module/target/mule-data-partition-module-0.1.0-mule-plugin.jar \
+  -g <org> -a mule-data-partition-module -v 0.1.0
+
+yaac upload asset mule-webterm-module/target/mule-webterm-module-0.1.0-mule-plugin.jar \
+  -g <org> -a mule-webterm-module -v 0.1.0
+
+yaac upload asset mule-jmx-module/target/mule-jmx-module-0.1.0-mule-plugin.jar \
+  -g <org> -a mule-jmx-module -v 0.1.0
+```
+
+Once published, add to your app's `pom.xml` using the organization ID as groupId:
+
+```xml
+<dependency>
+    <groupId>${orgId}</groupId>
+    <artifactId>mule-data-partition-module</artifactId>
+    <version>0.1.0</version>
+    <classifier>mule-plugin</classifier>
+</dependency>
+```
+
 ## Deploy
 
 ```bash
-# Upload to Anypoint Exchange
-yaac upload asset target/<artifact>.jar -g <org> -a <asset-id> -v <version>
+# Upload app to Exchange
+yaac upload asset target/<app>.jar -g <org> -a <app-name> -v <version>
 
 # Deploy to CloudHub 2.0
-yaac deploy app <org> <env> <app-name> target=<target> -g <org> -a <asset-id> -v <version> v-cores=0.1
+yaac deploy app <org> <env> <app-name> target=<target> \
+  -g <org> -a <app-name> -v <version> v-cores=0.1
+```
+
+## Test
+
+Each reference app has an integration test script:
+
+```bash
+reference-apps/mule-data-partitioner/test.sh https://<app-url>
+reference-apps/mule-jmx-metrics/test.sh https://<app-url>
+reference-apps/mule-webterm/test.sh https://<app-url> <password>
 ```

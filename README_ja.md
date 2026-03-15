@@ -120,12 +120,50 @@ cd reference-apps/mule-data-partitioner
 JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64 mvn clean package -DskipTests -DattachMuleSources
 ```
 
+## Exchange へのパブリッシュ
+
+モジュールを Anypoint Exchange にパブリッシュすると、他のアプリから Maven 依存として利用できます。
+
+```bash
+# モジュールをパブリッシュ
+yaac upload asset mule-data-partition-module/target/mule-data-partition-module-0.1.0-mule-plugin.jar \
+  -g <org> -a mule-data-partition-module -v 0.1.0
+
+yaac upload asset mule-webterm-module/target/mule-webterm-module-0.1.0-mule-plugin.jar \
+  -g <org> -a mule-webterm-module -v 0.1.0
+
+yaac upload asset mule-jmx-module/target/mule-jmx-module-0.1.0-mule-plugin.jar \
+  -g <org> -a mule-jmx-module -v 0.1.0
+```
+
+パブリッシュ後、アプリの `pom.xml` に組織IDを groupId として追加:
+
+```xml
+<dependency>
+    <groupId>${orgId}</groupId>
+    <artifactId>mule-data-partition-module</artifactId>
+    <version>0.1.0</version>
+    <classifier>mule-plugin</classifier>
+</dependency>
+```
+
 ## デプロイ
 
 ```bash
-# Anypoint Exchange にアップロード
-yaac upload asset target/<artifact>.jar -g <org> -a <asset-id> -v <version>
+# アプリを Exchange にアップロード
+yaac upload asset target/<app>.jar -g <org> -a <app-name> -v <version>
 
 # CloudHub 2.0 にデプロイ
-yaac deploy app <org> <env> <app-name> target=<target> -g <org> -a <asset-id> -v <version> v-cores=0.1
+yaac deploy app <org> <env> <app-name> target=<target> \
+  -g <org> -a <app-name> -v <version> v-cores=0.1
+```
+
+## テスト
+
+各リファレンスアプリに統合テストスクリプトがあります:
+
+```bash
+reference-apps/mule-data-partitioner/test.sh https://<app-url>
+reference-apps/mule-jmx-metrics/test.sh https://<app-url>
+reference-apps/mule-webterm/test.sh https://<app-url> <password>
 ```
