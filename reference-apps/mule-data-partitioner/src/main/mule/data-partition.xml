@@ -48,9 +48,11 @@ output application/json
         </http:listener>
         <set-variable variableName="partitionSize" value="#[attributes.queryParams.partitionSize default '1']" />
         <set-variable variableName="sizeUnit" value="#[attributes.queryParams.sizeUnit default 'KB']" />
+        <set-variable variableName="maxItems" value="#[attributes.queryParams.maxItems default '0']" />
         <datapartition:partition-csv config-ref="DataPartition_Config"
                                       partitionSize="#[vars.partitionSize as Number]"
                                       sizeUnit="#[vars.sizeUnit]"
+                                      maxItems="#[vars.maxItems as Number]"
                                       includeHeader="true">
             <non-repeatable-iterable />
         </datapartition:partition-csv>

@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.mycompany</groupId>
 	<artifactId>mule-data-partitioner</artifactId>
-	<version>1.0.27</version>
+	<version>1.0.29</version>
 	<packaging>mule-application</packaging>
 	<name>mule-data-partitioner</name>
 
