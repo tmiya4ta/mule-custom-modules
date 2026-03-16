@@ -219,6 +219,15 @@ CSV files read from an external SFTP server (theorems.io:2222) via Mule SFTP Con
 - No OOM errors — constant ~20KB memory usage regardless of file size
 - CloudHub 2.0's 30-second HTTP timeout requires async processing for files > 10MB via SFTP
 
+### vCores scaling comparison
+
+| vCores | File Size | Time | Throughput |
+|--------|-----------|------|------------|
+| 0.1 | 4.1GB | 400s | 10.5 MB/s |
+| 1.0 | 4.1GB | 384s | 10.9 MB/s |
+
+Increasing vCores from 0.1 to 1.0 yields only a 4% improvement. The bottleneck is SFTP network transfer (CH2 to on-prem), not CPU or memory. **0.1 vCores is sufficient** for SFTP-based partition workloads.
+
 ### On-premises Mule Runtime — local SFTP
 
 Same CSV files read from localhost SFTP (mule-sshd-connector on port 2222).
