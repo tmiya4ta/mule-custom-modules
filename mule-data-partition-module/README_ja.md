@@ -238,6 +238,18 @@ localhost SFTP（mule-sshd-connector、ポート 2222）からの読み込み。
 | 10MB | 10万 | 1MB | 11 | 195ms |
 | 2.1GB | 2000万 | 50MB | 42 | 21秒 |
 
+### テスト環境
+
+| | スペック |
+|--|--------|
+| CloudHub 2.0 | Private Space（ap-northeast-1）、0.1〜1.0 vCores |
+| オンプレ | Mule EE 4.11.2 スタンドアロン |
+| SFTP サーバー | mule-sshd-connector（Apache MINA SSHD）ポート 2222 |
+| ネットワーク | 家庭用回線（asahi-net）、上り約 12 MB/s（96 Mbps）、下り約 3 MB/s（24 Mbps） |
+| 実測スループット | 10.5 MB/s — 上り帯域の 87% を使用 |
+
+SFTP ベンチマークはネットワーク律速であり、CPU やメモリ律速ではない。より高速なネットワーク（専用線、データセンター等）ではスループットは比例して向上する。
+
 ## ビルド
 
 ```bash

@@ -238,6 +238,18 @@ Same CSV files read from localhost SFTP (mule-sshd-connector on port 2222).
 | 10MB | 100K | 1MB | 11 | 195ms |
 | 2.1GB | 20M | 50MB | 42 | 21s |
 
+### Test environment
+
+| | Spec |
+|--|------|
+| CloudHub 2.0 | Private Space (ap-northeast-1), 0.1–1.0 vCores |
+| On-premises | Mule EE 4.11.2 standalone |
+| SFTP server | mule-sshd-connector (Apache MINA SSHD) on port 2222 |
+| Network | Residential (asahi-net), upload ~12 MB/s (96 Mbps), download ~3 MB/s (24 Mbps) |
+| Measured throughput | 10.5 MB/s — 87% of the upload bandwidth limit |
+
+The SFTP benchmarks are network-bound, not CPU or memory-bound. With a faster network (e.g., dedicated line, data center), throughput would scale proportionally.
+
 ## Build
 
 ```bash
