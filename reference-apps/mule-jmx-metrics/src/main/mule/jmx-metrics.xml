@@ -59,4 +59,39 @@ output application/json
         <jmx:collect-threads config-ref="JMX_Config" />
     </flow>
 
+    <!-- Recent logs from ring buffer -->
+    <!-- GET /logs?lines=100&level=WARN&pattern=error -->
+    <flow name="logs-recent-flow">
+        <http:listener config-ref="HTTP_Listener_config" path="/logs" />
+        <jmx:get-recent-logs config-ref="JMX_Config"
+                              lines="#[attributes.queryParams.lines default '100']"
+                              level="#[attributes.queryParams.level]"
+                              pattern="#[attributes.queryParams.pattern]" />
+    </flow>
+
+    <!-- List log files -->
+    <flow name="logs-files-flow">
+        <http:listener config-ref="HTTP_Listener_config" path="/logs/files" />
+        <jmx:list-log-files config-ref="JMX_Config" />
+    </flow>
+
+    <!-- Tail a log file -->
+    <!-- GET /logs/tail?file=mule-app.log&lines=200 -->
+    <flow name="logs-tail-flow">
+        <http:listener config-ref="HTTP_Listener_config" path="/logs/tail" />
+        <jmx:tail-log-file config-ref="JMX_Config"
+                            fileName="#[attributes.queryParams.file default 'mule_ee.log']"
+                            lines="#[attributes.queryParams.lines default '100']" />
+    </flow>
+
+    <!-- Search a log file -->
+    <!-- GET /logs/search?file=mule-app.log&pattern=ERROR&lines=50 -->
+    <flow name="logs-search-flow">
+        <http:listener config-ref="HTTP_Listener_config" path="/logs/search" />
+        <jmx:search-log-file config-ref="JMX_Config"
+                              fileName="#[attributes.queryParams.file default 'mule_ee.log']"
+                              pattern="#[attributes.queryParams.pattern default 'ERROR']"
+                              lines="#[attributes.queryParams.lines default '50']" />
+    </flow>
+
 </mule>
